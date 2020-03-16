@@ -1,0 +1,11 @@
+*.aux
+*.fdb_latexmk
+*.log
+*.pdf
+*.synctex.gz
+*.png
+*.fls
+Data/
+data/
+Codigos/Análise de BCI/Models/
+Anotacoes/
