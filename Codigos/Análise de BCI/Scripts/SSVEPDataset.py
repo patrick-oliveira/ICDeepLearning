@@ -23,7 +23,7 @@ class SSVEPDataset(Dataset):
         return self.normalize(torch.tensor(pd.read_csv(dataframe['path'], names = range(1, 16+1), dtype = float).values), alpha = 10**0)
 
     def normalize(self, x, alpha = 1):
-        x = (x - torch.max(x) + x - torch.min(x))/(torch.max(x) - torch.min(x))
+#         x = (x - torch.max(x) + x - torch.min(x))/(torch.max(x) - torch.min(x))
         return x*alpha
     
     def repeat(self, X):
@@ -51,9 +51,11 @@ class SSVEPDataset(Dataset):
                     ydimension = 16
                 
                 state = torch.tensor([0, 0, 0, 0, 0])
+                state[rowInfo['state'] - 1] = 1
                 
                 tempSample['series'] = series.reshape(1, 512, ydimension)
-                tempSample['class'] = rowInfo['state']
+#                 tempSample['class'] = rowInfo['state']
+                tempSample['class'] = state
 
                 self.samples.append(tempSample)
             
