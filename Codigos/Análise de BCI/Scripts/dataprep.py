@@ -3,40 +3,37 @@ from utils import path
 import pandas as pd
 from sklearn.utils import shuffle
 
-def main(dataType):
+def dataprep(dataType, temp = 'Originais'):
 #     dataPath = path('/home/roboto/Documents/GitHub/ICDeepLearning/Data/Originais/768')
-    dataPath = path('C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data\\Originais\\'+dataType)
-    n_data = len(os.listdir(dataPath()))
+    dataPath = path('C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data\\'+temp+'\\'+dataType)
+    subjects = os.listdir(dataPath())
+#     n_data = len(subjects)
     all_data = []
     
-    for dataset in range(1, n_data+1):
-        pstr = dataPath/str(dataset)
-        for filetitle in os.listdir(pstr):
-            if filetitle[7] == "_":
-                os.rename(pstr+'/'+filetitle, pstr+'/'+(filetitle[:6] + "0" + filetitle[6:]))
+    for subject in subjects:
+        subjectPath = path(dataPath()+"\\"+subject)
+        
+        for state in range(1, 5 + 1):
+            filesPath = path(subjectPath()+"\\"+str(state)) 
 
-        files = os.listdir(pstr)
-        files.sort()
+            files = os.listdir(filesPath())
 
-        data = pd.DataFrame(index = range(len(files)), columns = ['ind', 'path', 'state'])
-        for i in data.index:
-            title = files[i]
-            data.loc[i]['ind'] = title[6:8]
-            data.loc[i]['path'] = (pstr+"/"+title)[-21:]
-            data.loc[i]['state'] = int(title[14])
+            data = pd.DataFrame(index = range(len(files)), columns = ['subject', 'state', 'path'])
+            for i in data.index:
+                data.loc[i]['subject'] = subject 
+                data.loc[i]['path'] = filesPath()+"\\"+files[i]
+                data.loc[i]['state'] = state
             
-        all_data.append(data)
+            all_data.append(data)
 
     data = shuffle(pd.concat(all_data))
     data.reset_index(inplace=True, drop=True)
-    testsetSize = int(len(data)*0.25)
-    testset = data[:testsetSize]
-    trainset  = data[testsetSize:]
+#     testsetSize = int(len(data)*0.25)
+#     testset = data[:testsetSize]
+#     trainset  = data[testsetSize:]
 
-    data.to_csv("SSVEPDataset.csv", index = False)
-    trainset.to_csv("SSVEPTrainset.csv", index = False)
-    testset.to_csv("SSVEPTestset.csv", index = False)
+    data.to_csv("SSVEPDataset_"+dataType+".csv", index = False)
+#     trainset.to_csv("SSVEPTrainset.csv", index = False)
+#     testset.to_csv("SSVEPTestset.csv", index = False)
 
 #####
-
-main('512')

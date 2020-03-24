@@ -4,12 +4,10 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
 class SSVEPDataset(Dataset):
-    def __init__(self, csvDataFrame, rootPath, repeat = False):
+    def __init__(self, csvDataFrame, repeat = False):
         """
         csvDataFrame(DataFrame): DataFrame containing the info of the dataset 
-        rootPath(string): directory where the files are
         """
-        self.rootPath = rootPath
         self.csvDataFrame  = csvDataFrame 
         self.samples = []
         self.initDataset(repeat)
@@ -21,8 +19,8 @@ class SSVEPDataset(Dataset):
     def __getitem__(self, idx):
         return self.samples[idx]
     
-    def read_data(self, fileName, path, ind):
-        return self.normalize(torch.tensor(pd.read_csv(path/fileName,  sep = ' ', usecols = range(16), names = range(1, 17), dtype = float).values), alpha = 10**0)
+    def read_data(self, dataframe):
+        return self.normalize(torch.tensor(pd.read_csv(dataframe['path'], names = range(1, 16+1), dtype = float).values), alpha = 10**0)
 
     def normalize(self, x, alpha = 1):
         x = (x - torch.max(x) + x - torch.min(x))/(torch.max(x) - torch.min(x))
@@ -43,7 +41,7 @@ class SSVEPDataset(Dataset):
             }
             rowInfo = self.csvDataFrame.loc[dfIndex]
             
-            series = self.read_data(rowInfo['path'], self.rootPath, rowInfo.name)
+            series = self.read_data(rowInfo)
             
             if not torch.isnan(series[0][0]):
                 if repeat:
@@ -51,6 +49,8 @@ class SSVEPDataset(Dataset):
                     ydimension = 512
                 else:
                     ydimension = 16
+                
+                state = torch.tensor([0, 0, 0, 0, 0])
                 
                 tempSample['series'] = series.reshape(1, 512, ydimension)
                 tempSample['class'] = rowInfo['state']

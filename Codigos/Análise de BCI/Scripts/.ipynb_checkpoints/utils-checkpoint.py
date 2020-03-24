@@ -15,10 +15,6 @@ class path():
                 os.mkdir(self.path)
             except:
                 print("Creation of the directory %s failed." % self.path)
-            else:
-                print("Directory %s created successfully." % self.path)
-        else:
-            print("Directory %s loaded successfully." % self.path)
         
     
     def __add__(self, other, att = False):
