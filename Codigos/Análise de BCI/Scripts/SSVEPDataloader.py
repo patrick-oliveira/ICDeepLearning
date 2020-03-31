@@ -4,7 +4,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 
 def SSVEPDataloaders(SSVEPDataset, batchSize):
     validation_split = .2
-    train_split = 0
+    train_split = .1
     shuffle_dataset = True
     random_seed = 42
     
