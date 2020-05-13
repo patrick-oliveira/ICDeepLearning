@@ -184,3 +184,6 @@ def generate_time_series(frequency=11, size=512, mode='sin', theta = 0):
         return np.array([np.cos(2*np.pi*frequency*(val/size) + theta) for val in range(size)])
     return np.array([np.sin(2*np.pi*frequency*(val/size)) for val in range(size)])
     
+
+def read_data(dataframe):
+    return pd.read_csv(dataframe['path'], header = None, dtype = np.float64)

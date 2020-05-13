@@ -92,13 +92,20 @@ import torch.nn as nn
 
 def activation(activationFunction):
     activations = nn.ModuleDict([
-        ['lrelu', nn.LeakyReLU()],
+        ['lrelu', nn.LeakyReLU(negative_slope = 0.01, inplace = True)],
         ['relu', nn.ReLU(inplace = True)],
-        ['identity', nn.Identity()],
+        ['none', nn.Identity()],
+        ['selu', nn.SELU(inplace = True)],
         ['sigmoid', nn.Sigmoid()],
     ])
     return activations[activationFunction]
 
+
+class Conv2dAuto(nn.Conv2d):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.padding = (self.kernel_size[0] // 2,
+                        self.kernel_size[1] // 2) # dynamic add padding based on the kernel_size
 
 def ConvBlock(in_size, out_size, activFunc = 'relu', *args, **kwargs):
 #     if padding == None: padding = kernel // 2

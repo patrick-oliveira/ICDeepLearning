@@ -3,11 +3,9 @@ from utils import path
 import pandas as pd
 from sklearn.utils import shuffle
 
-def dataprep(dataType, temp = 'Originais'):
-#     dataPath = path('/home/roboto/Documents/GitHub/ICDeepLearning/Data/Originais/768')
-    dataPath = path('C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data\\'+temp+'\\'+dataType)
+def dataprep(dataType, outputPath = 'Backup\\Originais'):
+    dataPath = path('C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data\\'+outputPath+'\\'+dataType)
     subjects = os.listdir(dataPath())
-#     n_data = len(subjects)
     all_data = []
     
     for subject in subjects:

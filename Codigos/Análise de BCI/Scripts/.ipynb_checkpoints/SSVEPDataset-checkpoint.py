@@ -75,7 +75,7 @@ class SSVEPSignalDataset(Dataset):
         return self.samples[idx]
     
     def read_data(self, dataframe):
-        return torch.tensor(self.normalize(pd.read_csv(dataframe['path'], header = None, dtype = float).values, alpha = 10**0)).T
+        return torch.tensor(self.normalize(pd.read_csv(dataframe['path'], header = None, dtype = float).values, alpha = 10**0)).T.squeeze()
     
     def normalize(self, x, alpha = 1):
         x = preprocessing.normalize(x, norm = 'max', axis = 0)
