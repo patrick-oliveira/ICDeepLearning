@@ -186,7 +186,7 @@ def visualizeModel(model, num_images = 6):
                     return
         model.train(mode = was_training)
         
-def trainModel(model, modelName, criterion, optimizer, scheduler, dataType, figSize):
+def trainModel(model, modelName, criterion, optimizer, scheduler, dataType, figSize, batchSize):
 #     dataTypes = ['512', '768', 'shifted']
     stats = {
         '512': [],
@@ -195,34 +195,34 @@ def trainModel(model, modelName, criterion, optimizer, scheduler, dataType, figS
     }
     
     print("Training stage:{}".format(dataType))
-    dataloaders, dataset_sizes, dataloader, _, _ = getData(dataType)
-    model, *stats[dataType] = trainLoop(model, criterion, optimizer, scheduler, dataloaders, dataset_sizes, dataloader, num_epochs = 5)
+    dataloaders, dataset_sizes, dataloader, _, _ = getData(dataType, batchSize)
+    model, *stats[dataType] = trainLoop(model, criterion, optimizer, scheduler, dataloaders, dataset_sizes, dataloader, num_epochs = 10)
     torch.save(model.state_dict(), 'Models\\'+modelName+'\\cca'+figSize+"\\model.pth")
     torch.save(stats, 'Models\\'+modelName+'\\cca'+figSize+'\\stats'+dataType+'.pth')
         
     return model, stats
 
 modelDict = {
-#     'resnet18': [models.resnet18(pretrained = True), 512],
+    'resnet18': [models.resnet18(pretrained = True), 512],
     'resnet34': [models.resnet34(pretrained = True), 512],
-#     'resnet50': [models.resnet50(pretrained = True), 2048],
-#     'resnet101': [models.resnet101(pretrained = True), 2048],
-#     'resnet152': [models.resnet152(pretrained = True), 2048],
-#     'densenet121': [models.densenet121(pretrained = True), 1024],
-#     'densenet161': [models.densenet161(pretrained = True), 2208],
-#     'densenet169': [models.densenet169(pretrained = True), 1664],
-#     'densenet201': [models.densenet201(pretrained = True), 1920],
-#     'alexnet': [models.alexnet(pretrained = True), 4096],
-#     'googlenet': [models.googlenet(pretrained = True), 1024],
-#     'vgg11': [models.vgg11(pretrained = True), 4096],
-#     'vgg13': [models.vgg13(pretrained = True), 4096],
-#     'vgg16': [models.vgg16(pretrained = True), 4096],
-#     'vgg19': [models.vgg19(pretrained = True), 4096],
-#     'mnasnet0_5': [models.mnasnet0_5(pretrained = True), 1280],
-#     'mnasnet1_0': [models.mnasnet1_0(pretrained = True), 1280],
-#     'resnext101_32x8d': [models.resnext101_32x8d(pretrained = True), 2048],
-#     'resnext50_32x4d': [models.resnext50_32x4d(pretrained = True), 2048],
-#     'shufflenet_v2_x0_5': [models.shufflenet_v2_x0_5(pretrained = True), 1024]
+    'resnet50': [models.resnet50(pretrained = True), 2048],
+    'resnet101': [models.resnet101(pretrained = True), 2048],
+    'resnet152': [models.resnet152(pretrained = True), 2048],
+    'densenet121': [models.densenet121(pretrained = True), 1024],
+    'densenet161': [models.densenet161(pretrained = True), 2208],
+    'densenet169': [models.densenet169(pretrained = True), 1664],
+    'densenet201': [models.densenet201(pretrained = True), 1920],
+    'alexnet': [models.alexnet(pretrained = True), 4096],
+    'googlenet': [models.googlenet(pretrained = True), 1024],
+    'vgg11': [models.vgg11(pretrained = True), 4096],
+    'vgg13': [models.vgg13(pretrained = True), 4096],
+    'vgg16': [models.vgg16(pretrained = True), 4096],
+    'vgg19': [models.vgg19(pretrained = True), 4096],
+    'mnasnet0_5': [models.mnasnet0_5(pretrained = True), 1280],
+    'mnasnet1_0': [models.mnasnet1_0(pretrained = True), 1280],
+    'resnext101_32x8d': [models.resnext101_32x8d(pretrained = True), 2048],
+    'resnext50_32x4d': [models.resnext50_32x4d(pretrained = True), 2048],
+    'shufflenet_v2_x0_5': [models.shufflenet_v2_x0_5(pretrained = True), 1024]
 }
 
 def lastLayer(modelType, model):
@@ -238,7 +238,7 @@ def lastLayer(modelType, model):
     }
     return Dict[modelType](model)
 
-def autoTraining(modelType, modelSize, dataType, figSize):
+def autoTraining(modelType, modelSize, dataType, figSize, batchSize):
     modelName = modelType+modelSize
     numClasses = 5
     model = modelDict[modelName][0]
@@ -249,6 +249,6 @@ def autoTraining(modelType, modelSize, dataType, figSize):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr = 0.001, momentum = 0.9)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size = 7, gamma = 0.1)
-    model, stats = trainModel(model, modelName, criterion, optimizer, scheduler, dataType, figSize)
+    model, stats = trainModel(model, modelName, criterion, optimizer, scheduler, dataType, figSize, batchSize)
 #     del(model)
     return model
