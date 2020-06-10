@@ -138,3 +138,33 @@ class ResNetEncoder(nn.Module):
         for block in self.blocks:
             x = block(x)
         return x
+    
+    
+class ResnetDecoder(nn.Module):
+    """
+    This class represents the tail of ResNet. It performs a global pooling and maps the output to the
+    correct class by using a fully connected layer.
+    """
+    def __init__(self, in_features, n_classes):
+        super().__init__()
+        self.avg = nn.AdaptiveAvgPool2d((1, 1))
+        self.decoder = nn.Linear(in_features, n_classes)
+        
+    def forward(self, x):
+        x = self.avg(x)
+        x = x.view(x.size(0), -1)
+        x = self.decoder(x)
+        return x
+    
+    
+class ResNet(nn.Module):
+    def __init__(self, in_channels, n_classes, *args, **kwargs):
+        super().__init__()
+        self.encoder = ResNetEncoder(in_channels, *args, **kwargs)
+        self.decoder = ResnetDecoder(self.encoder.blocks[-1].blocks[-1].expanded_channels, n_classes)
+        
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.decoder(x)
+        
+        
