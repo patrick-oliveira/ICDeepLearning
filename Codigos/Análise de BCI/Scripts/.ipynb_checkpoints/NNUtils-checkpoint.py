@@ -94,7 +94,7 @@ def getData(data_type, folder, data_address = 'C:\\Users\\Patrick\\Documents\\Gi
     
     return dataloader, dataloaders, dataset_sizes, class_names
 
-def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler, num_epochs = 10):
+def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler = None, num_epochs = 10):
     since = time.time()
     
     best_model_wgts = copy.deepcopy(model.state_dict())
@@ -107,7 +107,6 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler, num
         print('Epoch {}/{}'.format(epoch + 1, num_epochs))
         print('-'*5)
         
-        # Each epoch as a training and testing phase
         for phase in ['train', 'test']:
             print('Stage: {}'.format(phase))
             if phase == 'train':
@@ -136,7 +135,7 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler, num
                 cumulative_hits += torch.sum(preds == labels.data)
                 del(inputs); del(labels)
                 
-            if phase == 'train':
+            if phase == 'train' and scheduler != None:
                 scheduler.step()
             
             epoch_loss = cumulative_loss / dataset_size[phase]
@@ -159,10 +158,12 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler, num
     model.load_state_dict(best_model_wgts)
     return model, best_acc, time_elapsed
                     
-def kfold_train(model, dataset, criterion, optimizer, scheduler, num_folds = 5, batch_size = 4, shuffle = False, save_model = False, num_epochs = 10):
+def kfold_train(model, dataset, criterion, optimizer, scheduler = None, num_folds = 5, batch_size = 4, shuffle = True, save_model = False, num_epochs = 10):
     kfold = KFold(num_folds, shuffle)
-    cumulative_best_acc = 0
     cumulative_time = 0
+    cumulative_best_acc = .0
+    backup_weights = copy.deepcopy(model.state_dict())
+    init_state_opt = copy.deepcopy(optimizer.state_dict())
     
     for fold, (train_index, test_index) in enumerate(kfold.split(dataset, dataset.targets)):
         print('Fold {}'.format(fold))
@@ -175,11 +176,13 @@ def kfold_train(model, dataset, criterion, optimizer, scheduler, num_folds = 5, 
         dataloaders['train'] = torch.utils.data.DataLoader(train_subset, batch_size = batch_size, shuffle = shuffle)
         dataloaders['test']  = torch.utils.data.DataLoader(test_subset, batch_size = batch_size, shuffle = shuffle)
         
+        model.load_state_dict(backup_weights)
+        optimizer.load_state_dict(init_state_opt)
+        
         _, fold_best_acc, time_elapsed = train(model, dataloaders, dataset_size, criterion, optimizer, scheduler, num_epochs = num_epochs)
             
         cumulative_time += time_elapsed    
         cumulative_best_acc += fold_best_acc
-        print(cumulative_best_acc.item())
         
         print('')
         
