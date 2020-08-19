@@ -1,0 +1,717 @@
+Fold 0
+--
+Epoch 1/20
+-----
+Stage: train
+Loss: 1.7130 - Accuracy: 0.2527
+Stage: test
+Loss: 1.5420 - Accuracy: 0.3352
+--
+Epoch 2/20
+-----
+Stage: train
+Loss: 1.5201 - Accuracy: 0.3631
+Stage: test
+Loss: 1.4479 - Accuracy: 0.4304
+--
+Epoch 3/20
+-----
+Stage: train
+Loss: 1.2019 - Accuracy: 0.5375
+Stage: test
+Loss: 1.3914 - Accuracy: 0.4799
+--
+Epoch 4/20
+-----
+Stage: train
+Loss: 0.9543 - Accuracy: 0.6493
+Stage: test
+Loss: 0.8490 - Accuracy: 0.6630
+--
+Epoch 5/20
+-----
+Stage: train
+Loss: 0.6639 - Accuracy: 0.7647
+Stage: test
+Loss: 0.8063 - Accuracy: 0.7289
+--
+Epoch 6/20
+-----
+Stage: train
+Loss: 0.5111 - Accuracy: 0.8114
+Stage: test
+Loss: 0.5209 - Accuracy: 0.8242
+--
+Epoch 7/20
+-----
+Stage: train
+Loss: 0.4093 - Accuracy: 0.8558
+Stage: test
+Loss: 0.6095 - Accuracy: 0.7949
+--
+Epoch 8/20
+-----
+Stage: train
+Loss: 0.3237 - Accuracy: 0.8951
+Stage: test
+Loss: 0.5481 - Accuracy: 0.8352
+--
+Epoch 9/20
+-----
+Stage: train
+Loss: 0.2314 - Accuracy: 0.9203
+Stage: test
+Loss: 0.4128 - Accuracy: 0.8883
+--
+Epoch 10/20
+-----
+Stage: train
+Loss: 0.2269 - Accuracy: 0.9245
+Stage: test
+Loss: 0.3829 - Accuracy: 0.8791
+--
+Epoch 11/20
+-----
+Stage: train
+Loss: 0.1228 - Accuracy: 0.9620
+Stage: test
+Loss: 0.4137 - Accuracy: 0.8736
+--
+Epoch 12/20
+-----
+Stage: train
+Loss: 0.1547 - Accuracy: 0.9487
+Stage: test
+Loss: 0.2822 - Accuracy: 0.9121
+--
+Epoch 13/20
+-----
+Stage: train
+Loss: 0.1135 - Accuracy: 0.9652
+Stage: test
+Loss: 0.3156 - Accuracy: 0.8974
+--
+Epoch 14/20
+-----
+Stage: train
+Loss: 0.1075 - Accuracy: 0.9675
+Stage: test
+Loss: 0.2947 - Accuracy: 0.9048
+--
+Epoch 15/20
+-----
+Stage: train
+Loss: 0.0844 - Accuracy: 0.9684
+Stage: test
+Loss: 0.2959 - Accuracy: 0.9103
+--
+Epoch 16/20
+-----
+Stage: train
+Loss: 0.0647 - Accuracy: 0.9817
+Stage: test
+Loss: 0.3102 - Accuracy: 0.9029
+--
+Epoch 17/20
+-----
+Stage: train
+Loss: 0.0576 - Accuracy: 0.9844
+Stage: test
+Loss: 0.2435 - Accuracy: 0.9231
+--
+Epoch 18/20
+-----
+Stage: train
+Loss: 0.0437 - Accuracy: 0.9890
+Stage: test
+Loss: 0.2162 - Accuracy: 0.9469
+--
+Epoch 19/20
+-----
+Stage: train
+Loss: 0.0279 - Accuracy: 0.9927
+Stage: test
+Loss: 0.2084 - Accuracy: 0.9341
+--
+Epoch 20/20
+-----
+Stage: train
+Loss: 0.0153 - Accuracy: 0.9968
+Stage: test
+Loss: 0.2289 - Accuracy: 0.9377
+Best validation accuracy: 0.946886
+
+Fold 1
+--
+Epoch 1/20
+-----
+Stage: train
+Loss: 1.7194 - Accuracy: 0.2386
+Stage: test
+Loss: 1.5886 - Accuracy: 0.3004
+--
+Epoch 2/20
+-----
+Stage: train
+Loss: 1.5275 - Accuracy: 0.3562
+Stage: test
+Loss: 1.5110 - Accuracy: 0.3718
+--
+Epoch 3/20
+-----
+Stage: train
+Loss: 1.3218 - Accuracy: 0.4766
+Stage: test
+Loss: 1.5053 - Accuracy: 0.4670
+--
+Epoch 4/20
+-----
+Stage: train
+Loss: 1.0212 - Accuracy: 0.6181
+Stage: test
+Loss: 1.0087 - Accuracy: 0.6319
+--
+Epoch 5/20
+-----
+Stage: train
+Loss: 0.7258 - Accuracy: 0.7363
+Stage: test
+Loss: 0.8910 - Accuracy: 0.7125
+--
+Epoch 6/20
+-----
+Stage: train
+Loss: 0.6047 - Accuracy: 0.7908
+Stage: test
+Loss: 0.5625 - Accuracy: 0.7967
+--
+Epoch 7/20
+-----
+Stage: train
+Loss: 0.4524 - Accuracy: 0.8407
+Stage: test
+Loss: 0.3750 - Accuracy: 0.8718
+--
+Epoch 8/20
+-----
+Stage: train
+Loss: 0.2802 - Accuracy: 0.9066
+Stage: test
+Loss: 0.5082 - Accuracy: 0.8260
+--
+Epoch 9/20
+-----
+Stage: train
+Loss: 0.3066 - Accuracy: 0.8938
+Stage: test
+Loss: 0.3397 - Accuracy: 0.8956
+--
+Epoch 10/20
+-----
+Stage: train
+Loss: 0.2231 - Accuracy: 0.9190
+Stage: test
+Loss: 0.4980 - Accuracy: 0.8498
+--
+Epoch 11/20
+-----
+Stage: train
+Loss: 0.1467 - Accuracy: 0.9505
+Stage: test
+Loss: 0.1924 - Accuracy: 0.9286
+--
+Epoch 12/20
+-----
+Stage: train
+Loss: 0.1584 - Accuracy: 0.9501
+Stage: test
+Loss: 0.2170 - Accuracy: 0.9249
+--
+Epoch 13/20
+-----
+Stage: train
+Loss: 0.0781 - Accuracy: 0.9762
+Stage: test
+Loss: 0.1432 - Accuracy: 0.9451
+--
+Epoch 14/20
+-----
+Stage: train
+Loss: 0.0776 - Accuracy: 0.9757
+Stage: test
+Loss: 0.1326 - Accuracy: 0.9487
+--
+Epoch 15/20
+-----
+Stage: train
+Loss: 0.0458 - Accuracy: 0.9867
+Stage: test
+Loss: 0.1501 - Accuracy: 0.9396
+--
+Epoch 16/20
+-----
+Stage: train
+Loss: 0.0429 - Accuracy: 0.9881
+Stage: test
+Loss: 0.2121 - Accuracy: 0.9176
+--
+Epoch 17/20
+-----
+Stage: train
+Loss: 0.0481 - Accuracy: 0.9863
+Stage: test
+Loss: 0.1253 - Accuracy: 0.9634
+--
+Epoch 18/20
+-----
+Stage: train
+Loss: 0.0491 - Accuracy: 0.9840
+Stage: test
+Loss: 0.1164 - Accuracy: 0.9634
+--
+Epoch 19/20
+-----
+Stage: train
+Loss: 0.0419 - Accuracy: 0.9872
+Stage: test
+Loss: 0.1450 - Accuracy: 0.9524
+--
+Epoch 20/20
+-----
+Stage: train
+Loss: 0.0413 - Accuracy: 0.9872
+Stage: test
+Loss: 0.1415 - Accuracy: 0.9560
+Best validation accuracy: 0.963370
+
+Fold 2
+--
+Epoch 1/20
+-----
+Stage: train
+Loss: 1.7139 - Accuracy: 0.2555
+Stage: test
+Loss: 1.6299 - Accuracy: 0.3370
+--
+Epoch 2/20
+-----
+Stage: train
+Loss: 1.5098 - Accuracy: 0.3695
+Stage: test
+Loss: 1.5569 - Accuracy: 0.3938
+--
+Epoch 3/20
+-----
+Stage: train
+Loss: 1.2626 - Accuracy: 0.5179
+Stage: test
+Loss: 1.2682 - Accuracy: 0.5330
+--
+Epoch 4/20
+-----
+Stage: train
+Loss: 0.9339 - Accuracy: 0.6516
+Stage: test
+Loss: 0.8784 - Accuracy: 0.6777
+--
+Epoch 5/20
+-----
+Stage: train
+Loss: 0.7146 - Accuracy: 0.7386
+Stage: test
+Loss: 1.3098 - Accuracy: 0.6209
+--
+Epoch 6/20
+-----
+Stage: train
+Loss: 0.5739 - Accuracy: 0.7880
+Stage: test
+Loss: 0.9292 - Accuracy: 0.6960
+--
+Epoch 7/20
+-----
+Stage: train
+Loss: 0.4241 - Accuracy: 0.8429
+Stage: test
+Loss: 0.7359 - Accuracy: 0.7821
+--
+Epoch 8/20
+-----
+Stage: train
+Loss: 0.3337 - Accuracy: 0.8915
+Stage: test
+Loss: 0.6907 - Accuracy: 0.7949
+--
+Epoch 9/20
+-----
+Stage: train
+Loss: 0.2410 - Accuracy: 0.9167
+Stage: test
+Loss: 0.5923 - Accuracy: 0.8315
+--
+Epoch 10/20
+-----
+Stage: train
+Loss: 0.2587 - Accuracy: 0.9089
+Stage: test
+Loss: 0.5946 - Accuracy: 0.8462
+--
+Epoch 11/20
+-----
+Stage: train
+Loss: 0.2142 - Accuracy: 0.9359
+Stage: test
+Loss: 0.3367 - Accuracy: 0.8993
+--
+Epoch 12/20
+-----
+Stage: train
+Loss: 0.1835 - Accuracy: 0.9400
+Stage: test
+Loss: 0.4675 - Accuracy: 0.8773
+--
+Epoch 13/20
+-----
+Stage: train
+Loss: 0.1163 - Accuracy: 0.9606
+Stage: test
+Loss: 0.3294 - Accuracy: 0.9084
+--
+Epoch 14/20
+-----
+Stage: train
+Loss: 0.1461 - Accuracy: 0.9519
+Stage: test
+Loss: 0.3414 - Accuracy: 0.8974
+--
+Epoch 15/20
+-----
+Stage: train
+Loss: 0.1213 - Accuracy: 0.9592
+Stage: test
+Loss: 0.2898 - Accuracy: 0.9103
+--
+Epoch 16/20
+-----
+Stage: train
+Loss: 0.1132 - Accuracy: 0.9657
+Stage: test
+Loss: 0.3112 - Accuracy: 0.9011
+--
+Epoch 17/20
+-----
+Stage: train
+Loss: 0.0924 - Accuracy: 0.9721
+Stage: test
+Loss: 0.2198 - Accuracy: 0.9267
+--
+Epoch 18/20
+-----
+Stage: train
+Loss: 0.0663 - Accuracy: 0.9803
+Stage: test
+Loss: 0.2634 - Accuracy: 0.9304
+--
+Epoch 19/20
+-----
+Stage: train
+Loss: 0.0822 - Accuracy: 0.9753
+Stage: test
+Loss: 0.3026 - Accuracy: 0.9011
+--
+Epoch 20/20
+-----
+Stage: train
+Loss: 0.0572 - Accuracy: 0.9840
+Stage: test
+Loss: 0.2283 - Accuracy: 0.9231
+Best validation accuracy: 0.930403
+
+Fold 3
+--
+Epoch 1/20
+-----
+Stage: train
+Loss: 1.6857 - Accuracy: 0.2592
+Stage: test
+Loss: 1.5500 - Accuracy: 0.3352
+--
+Epoch 2/20
+-----
+Stage: train
+Loss: 1.5307 - Accuracy: 0.3558
+Stage: test
+Loss: 1.7452 - Accuracy: 0.3663
+--
+Epoch 3/20
+-----
+Stage: train
+Loss: 1.2881 - Accuracy: 0.4959
+Stage: test
+Loss: 1.1305 - Accuracy: 0.5549
+--
+Epoch 4/20
+-----
+Stage: train
+Loss: 0.9678 - Accuracy: 0.6438
+Stage: test
+Loss: 0.8394 - Accuracy: 0.7436
+--
+Epoch 5/20
+-----
+Stage: train
+Loss: 0.6586 - Accuracy: 0.7651
+Stage: test
+Loss: 0.6329 - Accuracy: 0.7949
+--
+Epoch 6/20
+-----
+Stage: train
+Loss: 0.4829 - Accuracy: 0.8361
+Stage: test
+Loss: 0.5743 - Accuracy: 0.8223
+--
+Epoch 7/20
+-----
+Stage: train
+Loss: 0.3982 - Accuracy: 0.8608
+Stage: test
+Loss: 0.5643 - Accuracy: 0.8150
+--
+Epoch 8/20
+-----
+Stage: train
+Loss: 0.2687 - Accuracy: 0.9048
+Stage: test
+Loss: 0.2927 - Accuracy: 0.9212
+--
+Epoch 9/20
+-----
+Stage: train
+Loss: 0.2275 - Accuracy: 0.9222
+Stage: test
+Loss: 0.3431 - Accuracy: 0.8846
+--
+Epoch 10/20
+-----
+Stage: train
+Loss: 0.1732 - Accuracy: 0.9469
+Stage: test
+Loss: 0.3434 - Accuracy: 0.8919
+--
+Epoch 11/20
+-----
+Stage: train
+Loss: 0.1323 - Accuracy: 0.9606
+Stage: test
+Loss: 0.2774 - Accuracy: 0.9212
+--
+Epoch 12/20
+-----
+Stage: train
+Loss: 0.0934 - Accuracy: 0.9684
+Stage: test
+Loss: 0.2345 - Accuracy: 0.9249
+--
+Epoch 13/20
+-----
+Stage: train
+Loss: 0.0995 - Accuracy: 0.9679
+Stage: test
+Loss: 0.2301 - Accuracy: 0.9286
+--
+Epoch 14/20
+-----
+Stage: train
+Loss: 0.0804 - Accuracy: 0.9766
+Stage: test
+Loss: 0.3323 - Accuracy: 0.9103
+--
+Epoch 15/20
+-----
+Stage: train
+Loss: 0.0673 - Accuracy: 0.9780
+Stage: test
+Loss: 0.1884 - Accuracy: 0.9396
+--
+Epoch 16/20
+-----
+Stage: train
+Loss: 0.0772 - Accuracy: 0.9780
+Stage: test
+Loss: 0.2212 - Accuracy: 0.9212
+--
+Epoch 17/20
+-----
+Stage: train
+Loss: 0.0410 - Accuracy: 0.9872
+Stage: test
+Loss: 0.2448 - Accuracy: 0.9322
+--
+Epoch 18/20
+-----
+Stage: train
+Loss: 0.0232 - Accuracy: 0.9959
+Stage: test
+Loss: 0.2345 - Accuracy: 0.9212
+--
+Epoch 19/20
+-----
+Stage: train
+Loss: 0.0298 - Accuracy: 0.9913
+Stage: test
+Loss: 0.3054 - Accuracy: 0.9286
+--
+Epoch 20/20
+-----
+Stage: train
+Loss: 0.0350 - Accuracy: 0.9886
+Stage: test
+Loss: 0.1968 - Accuracy: 0.9359
+Best validation accuracy: 0.939560
+
+Fold 4
+--
+Epoch 1/20
+-----
+Stage: train
+Loss: 1.7483 - Accuracy: 0.2445
+Stage: test
+Loss: 1.5193 - Accuracy: 0.2912
+--
+Epoch 2/20
+-----
+Stage: train
+Loss: 1.5485 - Accuracy: 0.3397
+Stage: test
+Loss: 1.4974 - Accuracy: 0.4048
+--
+Epoch 3/20
+-----
+Stage: train
+Loss: 1.3524 - Accuracy: 0.4588
+Stage: test
+Loss: 1.1111 - Accuracy: 0.5806
+--
+Epoch 4/20
+-----
+Stage: train
+Loss: 1.0247 - Accuracy: 0.6085
+Stage: test
+Loss: 1.0175 - Accuracy: 0.6593
+--
+Epoch 5/20
+-----
+Stage: train
+Loss: 0.7773 - Accuracy: 0.7212
+Stage: test
+Loss: 0.7527 - Accuracy: 0.7473
+--
+Epoch 6/20
+-----
+Stage: train
+Loss: 0.5781 - Accuracy: 0.7976
+Stage: test
+Loss: 0.6724 - Accuracy: 0.7894
+--
+Epoch 7/20
+-----
+Stage: train
+Loss: 0.4689 - Accuracy: 0.8429
+Stage: test
+Loss: 0.7443 - Accuracy: 0.7766
+--
+Epoch 8/20
+-----
+Stage: train
+Loss: 0.4171 - Accuracy: 0.8462
+Stage: test
+Loss: 0.4401 - Accuracy: 0.8443
+--
+Epoch 9/20
+-----
+Stage: train
+Loss: 0.3038 - Accuracy: 0.8988
+Stage: test
+Loss: 0.4487 - Accuracy: 0.8663
+--
+Epoch 10/20
+-----
+Stage: train
+Loss: 0.2195 - Accuracy: 0.9286
+Stage: test
+Loss: 0.3887 - Accuracy: 0.8810
+--
+Epoch 11/20
+-----
+Stage: train
+Loss: 0.1903 - Accuracy: 0.9400
+Stage: test
+Loss: 0.3431 - Accuracy: 0.8993
+--
+Epoch 12/20
+-----
+Stage: train
+Loss: 0.1386 - Accuracy: 0.9583
+Stage: test
+Loss: 0.3443 - Accuracy: 0.9011
+--
+Epoch 13/20
+-----
+Stage: train
+Loss: 0.1299 - Accuracy: 0.9588
+Stage: test
+Loss: 0.2538 - Accuracy: 0.9139
+--
+Epoch 14/20
+-----
+Stage: train
+Loss: 0.1115 - Accuracy: 0.9629
+Stage: test
+Loss: 0.3278 - Accuracy: 0.9176
+--
+Epoch 15/20
+-----
+Stage: train
+Loss: 0.1055 - Accuracy: 0.9684
+Stage: test
+Loss: 0.2934 - Accuracy: 0.9267
+--
+Epoch 16/20
+-----
+Stage: train
+Loss: 0.0954 - Accuracy: 0.9689
+Stage: test
+Loss: 0.2439 - Accuracy: 0.9377
+--
+Epoch 17/20
+-----
+Stage: train
+Loss: 0.0725 - Accuracy: 0.9803
+Stage: test
+Loss: 0.2505 - Accuracy: 0.9304
+--
+Epoch 18/20
+-----
+Stage: train
+Loss: 0.0702 - Accuracy: 0.9785
+Stage: test
+Loss: 0.2831 - Accuracy: 0.9267
+--
+Epoch 19/20
+-----
+Stage: train
+Loss: 0.0582 - Accuracy: 0.9844
+Stage: test
+Loss: 0.3131 - Accuracy: 0.9249
+--
+Epoch 20/20
+-----
+Stage: train
+Loss: 0.0795 - Accuracy: 0.9776
+Stage: test
+Loss: 0.2394 - Accuracy: 0.9359
+Best validation accuracy: 0.937729
+
+Training complete in 681m 11s
+Mean acc: 0.9435897435897436
