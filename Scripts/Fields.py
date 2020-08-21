@@ -33,5 +33,5 @@ def createField(method, data, indexes, figSize, figPath):
                 fig.savefig(figPath+'\\'+state+'\\'+subject+file+'_'+str(i)+".png", dpi = 200, bbox_inches = 'tight')
                 plt.close()
             except:
-                print("Error creating picture: {}".format(figPath()+'\\'+state+'\\0_'+file+".png"))
+                print("Error creating picture: {}".format(figPath+'\\'+state+'\\0_'+file+".png"))
     
