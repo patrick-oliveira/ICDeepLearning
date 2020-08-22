@@ -56,7 +56,7 @@ def get_dataset(path, image_size):
                                   ]))
     return dataset
 
-def getData(data_type, folder, data_address = 'C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data',
+def getData(data_type, folder, data_address = 'C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data\\Imagens',
             random_seed = 42, shuffle_dataset = True, batch_size = 4, image_size = 224, workers = 1,
             test_split = .2):
     
