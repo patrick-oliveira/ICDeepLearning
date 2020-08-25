@@ -107,7 +107,7 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler = No
         print('Epoch {}/{}'.format(epoch + 1, num_epochs))
         print('-'*5)
         
-        for phase in ['train', 'test']:
+        for phase in ['train', 'val']:
             print('Stage: {}'.format(phase))
             if phase == 'train':
                 model.train()
@@ -148,7 +148,7 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler = No
                 
             print('Loss: {:.4f} - Accuracy: {:.4f}'.format(epoch_loss, epoch_acc))
             
-            if phase == 'test' and epoch_acc > best_acc:
+            if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
             

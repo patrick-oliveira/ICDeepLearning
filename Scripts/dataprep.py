@@ -2,6 +2,11 @@ import os
 import pandas as pd
 from sklearn.utils import shuffle
 
+import sys
+sys.path.append('C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Scripts')
+sys.path.append('C:\\Users\\Patrick\\Documents\\GitHub\\BCI_ssvep_dataset')
+from dsloader import * # Inside BCI_ssvep_dataset
+
 def CreateDatasetCSVList(dataType, outputPath = 'Backup\\Originais'):
     dataPath = 'C:\\Users\\Patrick\\Documents\\GitHub\\ICDeepLearning\\Data\\'+outputPath+'\\'+dataType
     subjects = os.listdir(dataPath)
@@ -27,8 +32,9 @@ def CreateDatasetCSVList(dataType, outputPath = 'Backup\\Originais'):
     data.to_csv("SSVEPDataset_"+dataType+".csv", index = False)
     
     
-def SplitData(split, dataset, RawDataPath, outDataPath):
+def SplitData(s, dataset, RawDataPath, outDataPath):
     split = {
+        '128':0.5,
         '256':1,
         '512':2,
         '768':3,
@@ -61,6 +67,6 @@ def SplitData(split, dataset, RawDataPath, outDataPath):
         for i, data in zip(range(1, k), splittedData[:-1]):
             data.to_csv(outputPath+"\\"+str(i)+".csv", sep = ',', header = False, index = False)
 
-        if len(splittedData[-1]) == s:
+        if len(splittedData[-1]) == split:
             splittedData[-1].to_csv(outputPath+"\\"+str(i + 1)+".csv", header = False, index=  False)
     

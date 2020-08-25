@@ -6,23 +6,24 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn import preprocessing
 
 class SSVEPDataset(Dataset):
-    def __init__(self, csvDataFrame, repeat = False):
+    def __init__(self, csvDataFrame, dataType = 512, repeat = False):
         """
         csvDataFrame(DataFrame): DataFrame containing the info of the dataset 
         """
         self.csvDataFrame  = csvDataFrame 
         self.samples = []
-        self.initDataset(repeat)
+        self.targets = []
+        self.initDataset(repeat, dataType)
         
         
     def __len__(self):
         return len(self.samples)
     
     def __getitem__(self, idx):
-        return self.samples[idx]
+        return self.samples[idx], self.targets[idx]
     
     def read_data(self, dataframe):
-        return torch.tensor(self.normalize(pd.read_csv(dataframe['path'], names = range(1, 16+1), dtype = float).values, alpha = 10**0))
+        return torch.tensor(self.normalize(pd.read_csv(dataframe['path'], names = range(1, 16+1), dtype = float).values, alpha = 10**0), dtype = torch.float)
 
     def normalize(self, x, alpha = 1):
         x = preprocessing.normalize(x, norm = 'max', axis = 0)
@@ -33,13 +34,13 @@ class SSVEPDataset(Dataset):
             X = torch.cat([X, X], 1)
         return X
     
-    def initDataset(self, repeat):
+    def initDataset(self, repeat, dataType):
         nRows = len(self.csvDataFrame)
         for dfIndex in range(nRows):
-            tempSample = {
-                'series': None,
-                'class' : None
-            }
+#             tempSample = {
+#                 'series': None,
+#                 'class' : None
+#             }
             rowInfo = self.csvDataFrame.loc[dfIndex]
             
             series = self.read_data(rowInfo)
@@ -47,19 +48,19 @@ class SSVEPDataset(Dataset):
             if not torch.isnan(series[0][0]):
                 if repeat:
                     series = self.repeat(series)
-                    ydimension = 512
+                    ydimension = dataType
                 else:
                     ydimension = 16
                 
 
                 
-                tempSample['series'] = series.reshape(1, 512, ydimension)
-                tempSample['class'] = rowInfo['state'] - 1
+#                 tempSample['series'] = series.reshape(1, 512, ydimension)
+#                 tempSample['class'] = rowInfo['state'] - 1
 #                 state = torch.tensor([0, 0, 0, 0, 0])
 #                 state[rowInfo['state'] - 1] = 1
 #                 tempSample['class'] = state
-
-                self.samples.append(deepcopy(tempSample))
+                self.targets.append(rowInfo['state'] - 1)
+                self.samples.append(series.reshape(1, dataType, ydimension))
             
         
 class SSVEPSignalDataset(Dataset):
