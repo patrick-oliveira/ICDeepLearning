@@ -171,10 +171,10 @@ def kfold_train(model, dataset, criterion, optimizer, scheduler = None, num_fold
         test_subset  = torch.utils.data.Subset(dataset, test_index)
         dataset_size = {}
         dataset_size['train'] = len(train_subset) 
-        dataset_size['test'] = len(test_subset)
+        dataset_size['val'] = len(test_subset)
         dataloaders  = {}
         dataloaders['train'] = torch.utils.data.DataLoader(train_subset, batch_size = batch_size, shuffle = shuffle)
-        dataloaders['test']  = torch.utils.data.DataLoader(test_subset, batch_size = batch_size, shuffle = shuffle)
+        dataloaders['val']  = torch.utils.data.DataLoader(test_subset, batch_size = batch_size, shuffle = shuffle)
         
         model.load_state_dict(backup_weights)
         optimizer.load_state_dict(init_state_opt)
