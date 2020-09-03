@@ -1,0 +1,344 @@
+\documentclass{article}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage[colorlinks,citecolor=red,urlcolor=blue,bookmarks=false,hypertexnames=true]{hyperref}
+\usepackage{geometry}
+\usepackage{float}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=20mm,
+	top=20mm,
+}
+
+\newcommand{\limite}{\displaystyle\lim}
+\newcommand{\integral}{\displaystyle\int}
+\newcommand{\somatorio}{\displaystyle\sum}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{definicao}{Definição}[section]
+\newtheorem{proposicao}{Proposição}[section]
+\newtheorem{corolario}[teorema]{Corolário}
+\newtheorem{lema}{Lema}[section]
+\newtheorem{exemplo}{Exemplo}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{collorary}[theorem]{Collorary}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Propositon}[section]
+\newtheorem{example}{Example}[section]
+
+% Dados de identificação
+\title{Notes on Radial-Basis Networks}
+\author{Patrick Oliveira}
+\affil{}
+
+\begin{document}
+\maketitle
+
+\section{INTRODUCTION}
+Radial-Basis Function (RBF) Networks implements a different approach to classification problems. The problem of classifying nonlinear separable patterns is solved by proceeding in a hybrid manner:
+
+\begin{itemize}
+	\item The first stage transforms a given set of nonlinearly separable patterns into a new set for which, under certain conditions (what conditions?), the likelihood of the transformed patterns becoming linearly separable is high.
+	\item The second stage consists in the classification using least-squares estimation.
+\end{itemize}
+
+The structure of this network consists of three layers:
+
+\begin{itemize}
+	\item The input layer is made up of source nodes that connect the network to its environment.
+	\item The second layer applies a nonlinear transformation from the input space to the hidden (feature) space.
+	\item The output layer is linear, designed to supply the response of the network to the activation pattern applied to the input layer.
+\end{itemize}
+
+\subsection{COVER'S THEOREM ON THE SEPARABILITY OF PATTERNS}
+When a radial-basis function (RBF) network is used to perform a complex pattern-classification task, the problem is basically solved by first transforming it into a high dimensional space in a nonlinear manner and then separating the classes in the output layer. The underlying justification is found in Cover's Theorem on the separability of patterns, which, in qualitative terms, may be stated as follows
+
+\begin{theorem}
+	A complex pattern-classification problem, cast in a high-dimensional space nonlinearly, is more likely to be linearly separable than in a low dimensional space, provided that the space is not densely populated.
+\end{theorem}
+
+Consider a famility \( \mathcal{F} \) of surfaces where each naturally divides an input space into two regions. Let \( \mathcal{H} \) denote a set of $ N $ patterns $ \vec{x}_{1}, \vec{x}_{2}, \ldots, \vec{x}_{N} $ each of which is asigned to one of two classes \( \mathcal{H}_{1} \) and \( \mathcal{H}_{2} \). This dichotomy is said to be separable with respect to \( \mathcal{F} \) if there is $ \mathcal{S} \in \mathcal{F} $ that separates the points from both classes. Consider that the patterns belong to a input space $ V $, then we may define a set of real-valued values on $ V $ $ \{ \varphi_{i} ( \vec{x}) : i = 1, 2, \ldots, m_{1} \} $, which defines a mapping from $ V $ to a $ m_{1} $-dimensional feature space $ W $ given by
+
+$$ \vec{\phi} ( \vec{x}) = [ \varphi_{1} ( \vec{x}), \ldots, \varphi_{m_{1}} ( \vec{x})]^{T} $$
+
+A dichotomy $ \{ \mathcal{H}_{1}, \mathcal{H}_{2} \} $ of $ \mathcal{H} $ is said to be $ \varphi $ separable if there exists an $ m_{1} $-dimensional vector $ \vec{w} $ such that:
+
+$$ \begin{aligned}[t]
+	\vec{w}^{T} \vec{\phi} ( \vec{x}) > 0, \;\; \vec{x} \in \mathcal{H}_{1} \\
+	\vec{w}^{T} \vec{\phi} ( \vec{x}) < 0, \;\; \vec{x} \in \mathcal{H}_{2} \\
+\end{aligned} $$
+
+The hyperplane defined by the equation
+
+$$ \vec{w}^{T} \vec{\phi} ( \vec{x}) = 0 $$
+
+\noindent described the separating surface in the $ \vec{\phi} $-space. The inverse image of this hyperplane,
+
+$$ \vec{x}: \vec{w}^{T} \vec{\phi} ( \vec{x}) = 0 $$
+
+\noindent defines the separating surface in the input space.
+
+We can define a natural class of mappings by using a linear combination of r-wise products of the pattern vector coordinates, called rth-order rational varieties. A rational variety of order r in a space of dimension $ m_{0} $ is described by
+
+$$ \sum_{0 \leq i_{1} \leq \cdots \leq i_{r} \leq m_{0}} a_{i_{1}i_{2}\ldots i_{r}}x_{i_{1}}x_{i_{2}}\cdots x_{i_{r}} = 0 $$
+
+This rth-order product of entries $ x_{i} $ of $ \vec{x} $ is called a monomial. For an input space of dimensionality $ m_{0} $, there are
+
+$$ \dfrac{m_{0}!}{ (m_{0} - r)! r!} $$
+
+\noindent possible monomials.
+
+The probability that a given set of patterns is $ \varphi $ separable depends on the number of possible separating surfaces, which increases with the dimension of the feature space. Suppose that the activation patterns are hcosen independently, according to a probability measure imposed on the input space, and also that all the possible dichotomies of $ \mathcal{H} $ are equiprobable. The probability that a particular dichotomy picked at random is $ \phi $ separable, where the surfaces has $ m_{1} $ degrees of freedom, is given by
+
+\[
+	P (N, m_{1}) = \begin{cases}
+		(2^{1 - N}) \displaystyle\sum_{m = 0}^{m_{1} - 1} \binom{N - 1}{m} & \text{for } N > m_{1} - 1 \\
+		1 & \text{for } N \leq m_{1} - 1
+	\end{cases}
+\]
+
+\subsection{THE INTERPOLATION PROBLEM}
+
+Consider a feedforward network with an input layer, a single hidden layer, and an output layer consisting of a single unit, without loss of generality. The network is designed to perform a nonlinear mapping from the input space to the hidden space, followed by a linear mapping from the hidden space to the output space. The network represents a map from the $ m_{0} $-dimensional input space to the single-dimensional output space, written as
+
+$$ s: \mathbb{R}^{m_{0}} \rightarrow \mathbb{R}^{1} $$
+
+We may think of the map $ s $ as a hypersurface $ \Gamma \subset \mathbb{R}^{m_{0} + 1} $. In a practical situation, the surface $ \Gamma $ is unknown and the training data are usually contaminated with noise. The training proceeds as follows:
+
+\begin{itemize}
+	\item The training phase constitutes the optimization of a fitting procedure for the surface $ \Gamma $, based on known data points presented to the network in the form of input-output examples (patterns).
+	\item The generalization phase is synonymous with interpolation between the data points, with the interpolation being performed along the constrained surface generated by the fitting procedure as the optimum approximation to the true surface $ \Gamma $.
+\end{itemize}
+
+The interpolation problem may be stated as follows
+
+\begin{definition}
+	Given a set of $ N $ different points $ \{ \vec{x}_{i} \in \mathbb{R}^{m_{0}} : i = 1, \ldots, N \} $ and a corresponding set of $ N $ real numbers $ \{ d_{i} \in \mathbb{R}^{1} : i = 1, \ldots, N \} $, find a function $ F: \mathbb{R}^{N} \rightarrow R^{1} $ that satisfies the inperlotation condition:
+	$$ F ( \vec{x}_{i}) = d_{i}, \;\;\; i = 1, 2, \ldots, N $$
+\end{definition}
+
+The radial-basis-functions (RBF) technique consists of choosing a function F that has the form
+
+$$ F ( \vec{x}) = \sum^{N}_{i=1} w_{i} \varphi ( || \vec{x} - \vec{x}_{i} ||) $$
+
+\noindent where $ \{ \varphi (|| \vec{x} - \vec{x}_{i} || ): i = 1, 2, \ldots, N \} $ is a set of $ N $ arbitrary functions knwon as radial-basis functions. The data points are taken to be the centers of the radial-basis functions.
+
+Inserting the interpolation conditions, we obtain
+
+$$ 
+\begin{bmatrix}
+	d_{1} \\
+	d_{2} \\
+	\vdots \\
+	d_{N} \\
+\end{bmatrix}
+=
+\begin{bmatrix}
+	\varphi_{11} & \varphi_{12} & \ldots  & \varphi_{1N} \\
+	\varphi_{21} & \varphi_{22} & \ldots & \varphi_{2N} \\
+	\vdots & \vdots & \vdots & \vdots \\
+	\varphi_{N1} & \varphi_{N2} & \ldots & \varphi_{NN} \\
+\end{bmatrix}
+\begin{bmatrix}
+	w_{1} \\
+	w_{2} \\
+	\vdots \\
+	w_{N} \\
+\end{bmatrix}
+$$
+
+\noindent where
+
+$$ \varphi_{ij} = \varphi ( || \vec{x}_{i} - \vec{x}_{j} ||), \;\; i,j = 1, 2, \ldots, N$$
+
+In matricial notation, if $ \vec{\Phi} $ denote the N-by-N matrix with elements $ \varphi_{ij} $,
+
+$$ \vec{\Phi} \vec{w} = \vec{x} $$
+
+Assuming that $ \vec{\Phi} $ is nonsingular, the solution is given by $ \vec{w} = \vec{\Phi}^{-1} \vec{x} $. The nonsingularity is guaranteed by the
+
+\begin{theorem}
+	Let $ \{ \vec{x}_{i} \}_{i = 1}^{N} $ be a set of distinct points in $ \mathbb{R}^{m_{0}} $. Then the N-by-N interpolation matrix $ \vec{\Phi} $, whose ij-th element is $ \varphi_{ij} = \varphi ( || x_{i} - x_{j} ||)$ is nonsingular.
+\end{theorem}
+
+\subsection{RADIAL-BASIS-FUNCTION NETWORKS}
+
+A RBF network in the form of a layered structure have three layers:
+
+\begin{itemize}
+	\item An input layer, which consists of $ m_{0} $ source nodes.
+	\item A hidden layer, which consists of the same number of computation units as the size of the training sample (not necesseraly, it can have a smaller dimension), $ N $. Each unit is mathematically described by a raial-basis function $ \varphi_{j} ( \vec{x} ) = \varphi ( || \vec{x} - \vec{x}_{j}||) $. Unlike a multilayer perceptron, the links connecting the source nodes to the hidden units are direct connections with no weights.
+	\item An output layer, consisting of a linear classifier.
+\end{itemize}
+
+We focus on the use of a Gaussian function as the radial-basis function,
+
+$$ \varphi_{j} = \varphi ( \vec{x} - \vec{x}_{j}) = exp (- \dfrac{1}{2\sigma_{j}^{2}} || \vec{x} - \vec{x}_{j}||^{2}) $$
+
+\begin{figure}
+	\center
+	\includegraphics[scale = 0.6]{rbfnetwork.png}
+	\caption{}
+	\label{fig:rbfnetwork}			
+\end{figure}
+
+\subsection{K-MEANS CLUSTERING}
+
+In designing the RBF network, a key issue that needs to be addressed is how to compute the parameters of the Gaussian units that constitute the hidden layer by using unlabaled data. One way to do this is by using the K-Means Clustering.
+
+Let $ \{ \vec{x}_{i} \}_{i = 1}^{N} $ denote a set of multidimensional observations that is to be partitioned into a proposed set of K clusters, where K is smaller than the number of observations, N. Let the relationship $ j = C(i) $, $ i = 1, 2, \ldots, N $, denote a many-to-one mapper, called the encoder, which assigns the ith observation $ \vec{x}_{i} $, to the $ jth $ cluster according to a rule yet to be defined. To do this encoding, we need a measure of similarity between every pair f vectors $ \vec{x}_{i} $ and $ \vec{x}_{j} $, which is denoted by $ d ( \vec{x}_{i}, \vec{x}_{j}) $. When the measure is small enough, both vectores are assigned to the same cluster.
+
+To optimize the clustering process, we introduce the following cost function:
+
+$$ J (C) = \dfrac{1}{2} \displaystyle\sum_{j = 1}^{K} \displaystyle\sum_{C (i) = j}^{} \displaystyle\sum_{C (i') = j}^{} d ( \vec{x}_{i}, \vec{x}_{i'}) $$
+
+This cost function computes the distances between every pair of points at each cluster. For a prescribed K, the requirements is to find the encoder $ C (i) = j $ for which the cost function $ J (C) $ is minimized.
+
+In K-means clustering, the squared Euclidean norm is used to define the measure of similarity between the observations $ \vec{x}_{i} $ and $ \vec{x}_{j} $, as shown by
+
+$$ d ( \vec{x}_{i}, \vec{x}_{j} ) = || \vec{x}_{i} - \vec{x}_{j}||^{2} $$
+
+Hence,
+
+$$ J (C) = \dfrac{1}{2} \displaystyle\sum_{j = 1}^{K} \displaystyle\sum_{C (i) = j}^{} \displaystyle\sum_{C (i') = j}^{} || \vec{x}_{i} - \vec{x}_{i'}||^{2} $$
+
+We may write
+
+$$ J (C) = \displaystyle\sum_{j = 1}^{K} \displaystyle\sum_{C (i) = j}^{} || \vec{x}_{i} - \vec{\mu}_{j}||^{2} $$
+
+\noindent  where $ \vec{\mu}_{j} $ denotes the estimated mean vector associated with cluster $ j $. This mean can be viewed as the center of the cluster. This follows based on two observations
+
+\begin{itemize}
+	\item The Euclidean distance is symmetric.
+	\item For a given $ \vec{x}_{i} $, the encoder C assigns to cluster j all the observations $ \vec{x}_{i'} $ that are closest to $ \vec{x}_{i} $. Except for a scalling factor, the sum of the observations $ \vec{x}_{i'} $ so assigned is an estimate of the mean vector pertaining to cluster j; the scalling factor is $ 1 / N_{i} $, where $ N_{i} $ is the number of data points within cluster j.
+\end{itemize}
+
+For an interpretation of the cost function $ J (C) $, we may say that, except for a scaling factor $ 1 / N_{j} $, the inner summation in this equation is an estimate of the variance of the observations associated with cluster j for a given encoder C, as shown by
+
+$$ \sigma_{j}^{2} = \displaystyle\sum_{C (i) = j}^{} || \vec{x}_{i} - \vec{\mu}_{j}||^{2} $$
+
+Accordingly, we may view the cost function $ J (C) $ as a measure of the total cluster variance resulting from the assigments of all the N observations to the K clusters that are made by encoder C.
+
+The minimization problem is solved in two steps:
+
+\begin{itemize}
+\item \textbf{Step 1:} For a given encoder C, the total cluster variance is minimized with respect to the assigned set of cluster means $ \{ \vec{\mu}_{j}^{K} \} $;
+\item \textbf{Step 2:} Having computed the optimized cluster means $ \{ \vec{\mu}_{j = 1}^{K} \} $ in step 1, we next optimize the encoder as follows
+
+	$$ C (i) = arg \; min_{1 \leq j \leq k} || \vec{x} (i) - \vec{\mu}_{j}||^{2} $$
+
+Starting from some initial choice of the encoder C, the algorithm goes back and forth between these two steps until there is no further change in the cluster assignments.
+\end{itemize}
+
+\subsection{RECURSIVE LEAST-SQUARES ESTIMATION OF THE WEIGHT VECTOR}
+
+Remember that, for the least squares estimator, we had
+
+$$ \vec{R} (n) \vec{w} (n) = r (n), \;\; n = 1, 2, \ldots $$
+
+This \textit{normal equation} introduces three terms:
+
+\begin{enumerate}
+	\item The K-by-K correlation function of the hidden-unit outputs, which is defined by
+
+		$$ \vec{R} (n) = \displaystyle\sum_{i = 1}^{n}  \vec{\Phi} ( \vec{x}_{i}) \vec{\Phi}^{T} ( \vec{x}_{i}) $$
+
+		\noindent where
+
+		$$ \vec{\Phi} ( \vec{x}_{i}) = [ \varphi ( \vec{x}_{i}, \vec{\mu}_{1}), \ldots, \varphi ( \vec{x}_{i}, \vec{\mu}_{K})]^{T} $$
+
+		\noindent and
+
+		$$ \varphi ( \vec{x}_{i}, \vec{\mu}_{j}) = exp ( - \dfrac{1}{2\sigma_{j}^{2}} || \vec{x}_{i} - \vec{\mu}_{j}||^{2}), \;\; j = 1, 2, \ldots, K $$
+
+	\item The k-by-1 cross-correlation vector between the desired response at the output of the RBF network and the hidden-unit outputs, which is defined by
+
+		$$ \vec{r} (n) = \displaystyle\sum_{i = 1}^{n} \vec{\Phi} ( \vec{x}_{i}) d (i) $$
+
+	\item The unkwnown weight vector $ \vec{w} (n) $, which is optimized in the least squares sense.
+\end{enumerate}
+
+This equation can be solved analytically if $ \vec{R} (n) $ is nonsingular, but this can be a demanding task if the size of the hidden layer is too big. It's proposed a recursive implementation of the method of least squares to take care of this computational difficulty. This algorithm is called recursive least-sqaures (RLS) algorithm.
+
+\subsubsection{The RLS algorithm}
+
+We begin by writing $ \vec{r} (n) $ by
+
+$$ 
+\begin{aligned}[t]
+	\vec{r} (n) &= \displaystyle\sum_{i = 1}^{n - 1} \vec{\Phi} ( \vec{x}_{i})d (i) - \vec{\Phi} ( \vec{x}_{n})d (n) \\
+		    &= \vec{r} (n - 1) + \vec{\Phi} ( \vec{x}_{n}) d (n) \\
+		    &= \vec{R} (n - 1) \vec{w} (n - 1) + \vec{\Phi} ( \vec{x}_{n}) d (n) 
+\end{aligned}
+$$
+
+Next, we add and subtract the term $ \vec{\Phi} (n) \vec{\Phi}^{T} (n) \vec{w} (n - 1) $ to the right side, obtaining
+
+$$ \vec{r} (n) = [ \vec{r} (n - 1) + \vec{\Phi} (n) \vec{\Phi}^{T} (n) ] \vec{w} (n - 1) + \vec{\Phi} (n) [d (n) - \vec{\Phi}^{T} (n) \vec{w} (n - 1)] $$
+
+The first expression is just the correlation function
+
+$$ \vec{R} (n) = \vec{R} (n - 1) + \vec{\Phi} (n) \vec{\Phi}^{T} (n) $$
+
+\noindent and the expression inside the second brackets can be defined as the prior estimation error $ \alpha (n) $, 
+
+$$ 
+\begin{aligned}[t]
+	\alpha (n) &= d (n) - \vec{\Phi}^{T} (n) \vec{w} (n - 1) \\
+		   &= d (n) - \vec{w}^{T} (n - 1) \vec{\Phi} (n) \\
+\end{aligned}
+$$
+
+Simplifying the original expression,
+
+$$ \vec{r} (n) = \vec{R} (n) \vec{w } (n - 1) + \vec{\Phi} (n) \alpha (n) = \vec{R} (n) \vec{w} (n) $$
+
+Hence,
+
+$$ \vec{w} (n) = \vec{w} (n - 1) + \vec{R}^{-1} (n) \vec{\Phi} (n) \alpha (n) $$
+
+Now, we need a recursive algorithm to compute the inverse $ \vec{R}^{-1} (n) $.
+
+\subsubsection{Recursive Formula for Computing $ \vec{R}^{-1} (n) $}
+
+Consider the matrix
+
+$$ A = B^{-1} + CDC^{T} $$
+
+\noindent where it is assumed that B is nonsingular, A and B have similar dimensions and D is a nonsingular matrix with different dimensions, and C is a rectangular matrix of appropriate dimensions. According to the matrix inversion lemma, we have
+
+$$ A^{-1} = B - BC (D + C^{T}BC)^{-1}C^{T}B $$
+
+Make the substitutions
+
+$$ 
+\begin{aligned}[t]
+	A &= \vec{r} (n)\\
+	B^{-1} &= R (n - 1)\\
+	C &= \vec{\Phi} (n)\\
+	D &= 1
+\end{aligned}
+$$
+
+\noindent we obtain
+
+$$ \vec{R}^{-1} (n) = \vec{R}^{-1} (n - 1) - \dfrac{ \vec{R}^{-1} (n - 1) \vec{\Phi} (n) \vec{\Phi}^{T} (n) \vec{R}^{-1T} (n - 1)}{1 + \vec{\Phi}^{T} (n) \vec{R}^{-1} (n - 1) \vec{\Phi} (n)} $$
+
+\noindent and we used the symmetry property of the correlation matrix, $ \vec{R}^{t} (n - 1) = \vec{R} (n - 1) $. To simplify the formulation, we set $ \vec{R}^{-1} (n) = P (n) $, then
+
+$$ P(n) = P(n - 1) - \dfrac{P (n - 1) \vec{\Phi} (n) \vec{\Phi}^{T} (n) P (n - 1)}{P (n - 1) \vec{\Phi} (n) \vec{\Phi}^{T} (n) P ^{T} (n - 1)} $$
+
+Finally, defining $ g (n) = R^{-1} (n) \vec{\Phi} (n) = P (n) \vec{\Phi} (n) $, we have the learning rule
+
+$$ \vec{w} (n) = \vec{w} (n - 1 ) + g (n) \alpha (n)$$
+
+
+\end{document}
+

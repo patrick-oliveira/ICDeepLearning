@@ -1,0 +1,170 @@
+\documentclass[twocolumn]{article}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage[colorlinks,citecolor=red,urlcolor=blue,bookmarks=false,hypertexnames=true]{hyperref}
+\usepackage{geometry}
+\usepackage{float}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=20mm,
+	top=20mm,
+}
+
+\newcommand{\limite}{\displaystyle\lim}
+\newcommand{\integral}{\displaystyle\int}
+\newcommand{\somatorio}{\displaystyle\sum}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{definicao}{Definição}[section]
+\newtheorem{proposicao}{Proposição}[section]
+\newtheorem{corolario}[teorema]{Corolário}
+\newtheorem{lema}{Lema}[section]
+\newtheorem{exemplo}{Exemplo}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{collorary}[theorem]{Collorary}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Propositon}[section]
+\newtheorem{example}{Example}[section]
+
+% Dados de identificação
+\title{Wiener Filter}
+\author{Patrick Oliveira}
+\affil{}
+
+\begin{document}
+\maketitle
+
+We want to develop an \textit{adaptive filter}, i.e., a system that receives and process a signal (or a set of signals) whose statistical properties may change, and therefore needs to implement an algorithm of auto-adjustment to properly approximate the output signal to the desired one.
+
+Formally, we define the behaviour of the system as the set
+
+$$ \mathcal{T} := { (\vec{x(i)}, d(i))\;|\; i = 1, 2, \ldots, n, \ldots} $$
+
+\noindent where 
+
+$$ \vec{x} (i) = \left[ x_{1} (i), x_{2} (i), \ldots, x_{M} (i) \right]^{T} $$
+
+\noindent is an input vector of size \textit{M}, where \textit{M} can be the number of sensors generating those signals (if the signals are originated at different points in space), or it can be a time range considering the present value $ x_M (i) $ and \textit{M - 1} previous values, equally spaced in time. Those values depends on the time index $ i = 1, 2, \ldots $.
+
+The filter is inspired by the \textit{perceptron} in the sense that it is a \textit{linear combiner}. Its output is computed as
+
+$$ y (i) = \vec{x}^{T} (i) \vec{w} (i) $$
+
+\noindent where
+
+$$ \vec{w} (i) = \left[ w_{1} (i), w_{2}, \ldots, w_{M} (i) \right]^{T} $$
+
+\noindent is a vector a weights to be adjusted. This adjustment depends, naturally, on a error
+
+$$ \begin{aligned}[t]
+	e (i) &= d (i) - y (i) \\
+	      &= d (i) - \vec{x}^{T} (i) \vec{w} (i)
+\end{aligned} $$
+
+Generally, we cna define a \textit{cost function} $ \mathcal{J} : W \rightarrow \mathbb{R} $, where $ \mathcal{J} ( \vec{w}) $ is a continuously differentiable function that measures the total error of a filter that uses a parameter $ \vec{w} $. Our objective, therefore, is to minimize $ \mathcal{J} ( \vec{w}) $ in relation to $ \vec{w} $ without constraints. The optimal solution $ \vec{w}^{*} $ satisfies
+
+$$ \nabla \mathcal{J} ( \vec{w}^{*}) = \vec{0} $$
+
+Consider the quadratic cost function
+
+$$ \begin{aligned}[t]
+	\mathcal{J} ( \vec{w}) &= \dfrac{1}{2} \sum_{i = 1}^{n} e^{2} (i) \\
+			       &= \dfrac{1}{2} \vec{e}^{T} (n) \vec{e} (n) \\
+\end{aligned}$$
+
+\noindent where
+
+$$ \vec{e} (n) = \left[ e(1), e(2), \ldots, e(n) \right]^{T} $$
+
+\noindent is a error vector of a sample (batch) of $ n $ measurements (like n repeated measurements equally spaced in time). Given that $ e (i) = d (i) - y (i) $, we may write
+
+$$ \vec{e} (n) = \vec{d} (n) - X (n) \vec{w} $$
+
+\noindent where
+
+$$ \vec{d} (n) = \left[ d (1), d (2), \ldots, d (n) \right]^{T} $$
+
+\noindent is a vector of desired outputs corresponding to the inputs contained at the data matrix
+
+$$ X (n) = \left[ \vec{x} (1), \vec{x} (2), \ldots, \vec{x} (n) \right]^{T} $$
+
+The derivative of $ \vec{e} (n) $ in relation to $ \vec{w}$ is given by
+
+$$ \nabla \vec{e} (n) = - X^{T} (n) $$
+
+Therefore, computing the derivative of $ \mathcal{J} ( \vec{w}) $,
+
+$$ \begin{aligned}[t]
+	\nabla \mathcal{J} ( \vec{w}) &= \dfrac{1}{2} \nabla ( \vec{e}^{T} \cdot \vec{e}) \\
+				      &= \nabla \vec{e} \cdot \vec{e} \\
+				      &= \nabla \vec{e} \cdot ( \vec{d} (n) - X (n) \vec{w})\\
+				      &= X^{T} (n)( X (n) \vec{w} - \vec{d} (n))\\
+\end{aligned} $$
+
+Setting $ \nabla \mathcal{J} ( \vec{w}) = 0 $ and solving for $ \vec{w} $ we obtain the optimal parameter $ \vec{w}^{*} $
+
+$$ \begin{aligned}[t]
+	& X^{T}(n) (X (n) \vec{w} - \vec{d} (n)) = 0 \\
+	& (X^{T} (n) X (n)) \vec{w} - X^{T} (n) \vec{d} (n) = 0 \\
+	& \Rightarrow \vec{w}^{*} = (X^{T} (n) X (n))^{-1} X^{T} (n) \vec{d} (n)\\
+\end{aligned} $$
+
+
+Since $ \vec{w}^{*} $ is an analytical solution to the optimization problem, given a batch of inputs, the adjustment of the weight vector converges in only one iteration. One problem is that it may not adjust the weights correctly when the signal is non-stationary, and being a batch learning algorithm, it is not instantenously adjusted as the filter receives new signals.
+
+An algorithm to solve the unconstrained-optimization problem can be developed using the \textit{Method of Steepest Descent}
+
+\section{Method of Steepest Descent}
+
+Let $ \vec{g} = \nabla \mathcal{E} ( \vec{w} ) $. The steepest-descent algorithm is formally described by
+
+$$ \vec{w} (n + 1) = \vec{w} (n) - \eta \vec{g} (n) $$
+
+\noindent where $ \eta $ is a positive constant called the \textit{stepsize} or \textit{learning rate}. In going from the iteration $ n $ to $ n + 1 $, the algorithm applies the \textit{correction}
+
+$$ \Delta \vec{w} (n)  = \vec{w} (n + 1) - \vec{w} (n) = - \eta \vec{g} (n)$$
+
+\noindent where
+
+$$ \vec{g} (n) = \nabla \mathcal{J} (\vec{w})$$
+
+On-line algorithms will compute the direction of steepest descent (gradient) using sucessive first (Gauss-Newton, LMS) or second (Newton) order local approximations of the cost function.
+
+\subsection{The Least-Mean-Square Algorithm}
+The LMS algorithm is designed to work with the error of one iteration (the last one), and not the cumulative error of a collection (bach) of input vectors. Since we have only one error, the weight vector obtained is an estimate of the optimum weight vector $\vec{w}^{*}$. We find the gradient (derivative) of the error function and use the update rule of the gradient descent (steepest descent) method.
+
+The least-mean-square (LMS) algorithm is configured to minimize instantaneous value of the cost function,
+
+$$ \mathcal{J} ( \vec{w}_{\lambda} ) = \dfrac{1}{2} e^{2} (n) $$
+
+The difference is (may be) that we use the last computed error signal, and not a vector of error signals considering a time interval. Differentiating $ \mathcal{J} ( \vec{w}_{\lambda}) $ with respect to the weight vector $ \vec{w}_{\lambda} $ yields
+
+$$ \dfrac{\partial \mathcal{J} ( \vec{w}_{\lambda})}{\partial \vec{w}_{\lambda}} = e (n) \dfrac{\partial e (n)}{\partial \vec{w}} $$
+
+Expressing the error signal as 
+
+$$ e (n) = d (n) - \vec{x}^{T} (n) \vec{w}_{\lambda} (n) $$
+
+\noindent we obtain
+
+$$ \dfrac{\partial e (n)}{\partial \vec{w}_{\lambda} (n)} = - \vec{x} (n) $$
+
+\noindent hence,
+
+$$ \dfrac{\partial \mathcal{J} (\vec{w})}{\partial \vec{w}_{\lambda}} = - \vec{x} (n) e (n)  $$
+
+We then formulate the LMS algorithm as follows:
+
+$$ \vec{w}(n+1) = \vec{w} (n) + \eta \vec{x} (n) e (n) $$
+
+
+
+\end{document}
+

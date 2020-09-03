@@ -1,0 +1,341 @@
+\documentclass[twocolumn]{article}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage[colorlinks,citecolor=red,urlcolor=blue,bookmarks=false,hypertexnames=true]{hyperref}
+\usepackage{geometry}
+\usepackage{float}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=20mm,
+	top=20mm,
+}
+
+\newcommand{\limite}{\displaystyle\lim}
+\newcommand{\integral}{\displaystyle\int}
+\newcommand{\somatorio}{\displaystyle\sum}
+\DeclareMathOperator{\sech}{sech}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{definicao}{Definição}[section]
+\newtheorem{proposicao}{Proposição}[section]
+\newtheorem{corolario}[teorema]{Corolário}
+\newtheorem{lema}{Lema}[section]
+\newtheorem{exemplo}{Exemplo}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{collorary}[theorem]{Collorary}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Propositon}[section]
+\newtheorem{example}{Example}[section]
+
+% Dados de identificação
+\title{Multilayer Perceptron}
+\author{Patrick Oliveira}
+\affil{}
+
+\begin{document}
+\maketitle
+
+\section{Introdução}
+	Notes on Multilayer Percetrons, based on Haykin's book, Neural Networks and Learning Machines.
+
+\section{Introduction}
+	The following three points highlight the basic features of multilayer perceptrons:
+
+	\begin{itemize}
+		\item THe model of each neuron in the network includes a nonlinear activation function that is \textit{differentiable}.
+		\item The network contains one or more layers that are \textit{hidden} from both the input and output nodes.
+		\item The network exhibits a high degree of \textit{connectivity}, the extent of which is determined by sinaptic weights of the network.
+	\end{itemize}
+
+\section{Batch Learning and On-line Learning}
+
+	Let
+
+	$$ \mathcal{F} = \{ \boldsymbol{x} (n), \boldsymbol{d} (n) \}_{n = 1}^{N} $$
+
+	\noindent denote the \textit{training sample} used to train the network in a supervised manner. Let $ y_{j} (n) $ denote the function signal produced at the output of neuron $ j $ in the output layer by the stimulus $ \boldsymbol{x} (n) $ applied to the input layer. Correspondingly, the \textit{error signal} produced at the output of neuron $ j $ is defined by
+
+	$$ e_{j} (n) = d_{j} (n) - y_{j} (n)  $$
+
+	\noindent where $ d_{j} (n) $ is the $ i $th element of the desired-response vector $ \boldsymbol{d} (n) $. The \textit{instantaneous error energy} of neuron $ j $ is defined by
+
+	$$ \mathcal{E} (n) = \dfrac{1}{2} e_{j}^{2} (n) $$
+
+	Summing the error-energy contributions of all the neurons in the output layer, we express the \textit{total instantaneous error energy} of the whole network as
+
+	$$ \begin{aligned}[t]
+			\mathcal{E} (n) & = \sum_{j \in C} \mathcal{E}_{j} (n)        \\
+			                & = \dfrac{1}{2} \sum_{j \in C} e_{j}^{2} (n) \\
+		\end{aligned} $$
+
+	\noindent where the set $ C $ includes all the neurons in the output layer. With the trianing sample consisting of $ N $ examples, the \textit{error energy averaged over the training sample}, or the \textit{empirical risk}, is defined as
+
+	$$ \begin{aligned}[t]
+			\mathcal{E}_{av} (N) & = \dfrac{1}{N} \sum_{n = 1}^{N} \mathcal{E} (n)               \\
+			                     & = \dfrac{1}{2N} \sum_{n = 1}^{N} \sum_{j \in C} e_{j}^{2} (n) \\
+		\end{aligned} $$
+
+	We choose one of these cost functions to use with the correction algorithm based on the type of learning we implemented.
+
+	\noindent (?) In function of what we plot each of these cost functions? The example index, or the number of examples used?
+
+	\subsection{Batch Learning}
+
+		In the batch method of supervised learning, adjustments of the synaptic weights of the multilayer perceptron are performed \textit{after} the presentation of \textit{all} the $ N $ examples in the training sample $ \mathcal{F} $ that constitute one \textit{epoch} of training. In other words, the cost function for batch learning is defined by the average error energy $ \mathcal{E}_{av} $. One realization of the learning curve is obtained by plotting $ \mathcal{E}_{av} $ versus the number of epochs, where, for each epoch of training, the examples in the training sample $ \mathcal{F} $ are \textit{randomly shuffled}. The learning curve is then computed by \textit{ensemble averaging} a large enough number of such realizations, where each realization is performed for a \textit{different set of initial conditions} chosen at random.
+
+		\noindent (?) What are those set of initial conditions?
+
+		\noindent (?) How is this ensemble averaging computed? We select a set of different initial conditions, train various networks separately and then average the error function and the synaptic weights?
+
+		In a statistical context, batch learning may be viewed as a form of statistical inference. It is therefore well suited for solving a nonlinear regression problem.
+
+		\noindent (?) How is that so? We want to minimize a cost function, we cannot solve it analytically and we have access to a sample, so we use this sample to estimate the solution. What is the form of this estimate? What are its statistical properties?
+
+	\subsection{On-line Learning}
+
+		In the on-line method of supervised learning, adjustments to the synaptic weights of the multilayer perceptron are performed on a \textit{example-by-example basis}. The cost function to be minimized is therefore the total instantaneous error energy $ \mathcal{E} (n) $.
+
+		For a given set of initial conditions, a single realization of the learning curve is obtained by plotting the final value $ \mathcal{E} (N) $ versus the number of epochs used in the training session, where, as before, the training examples are randomly shuffled after each epoch. As with batch learning, the learning curve for on-line learning is computed by ensemble averaging such realizations over a large enough number of initial conditions chosen at random.
+
+\section{The Back-Propagation Algorithm}
+
+	The induced local field $ v_{j} (n) $ produced at the input of the activation function with neuron \textit{j} is given by
+
+	$$ \begin{aligned}[t]
+			v_{j} (n) & = \sum_{i = 0}^{m} w_{ji} (n) y_{i} (n)               \\
+			          & = \boldsymbol{w}_{j}^{T} (n) \cdot \boldsymbol{y} (n) \\
+		\end{aligned} $$
+
+	\noindent where \textit{m} is the total number of inputs (excluding the bias) applied to neuron j. The synaptic weight $ w_{j0} $ (corresponding to the fixed input $ y_{0} = +1 $) equals the bias $ b_{j} $ applied to neuron \textit{j}. The function signal $ y_{j} (n) $ appearing at the output of neuron \textit{j} at iteration \textit{n} is
+
+	$$ y_{j} (n) = \varphi_{j} (v_{j} (n)) $$
+
+	The back-propagation algorithm applied a correction $ \Delta w_{ji} (n) $ to the synaptic weight $ w_{ji} (n) $, which is proportional to the partial derivate $ \partial \mathcal{E} (n) \ \partial w_{ji} (n) $. By the chain rule,
+
+	$$ \dfrac{\partial \mathcal{E} (n)}{\partial w_{ji} (n)} = \dfrac{\partial \mathcal{E} (n) }{ \partial e_{j} (n)} \dfrac{\partial e_{j} (n)}{\partial y_{j} (n)} \dfrac{\partial y_{j} (n)}{\partial v_{j} (n)} \dfrac{\partial v_{j} (n)}{\partial w_{ji} (n)} $$
+
+	We get an expression for this derivative computing each composing derivative using the previous equations. Differentiating the instantenous cost function with respect to $ e_{j} (n) $, we get
+
+	$$ \dfrac{\partial \mathcal{E} (n)}{\partial e_{j} (n)} = e_{j} (n) $$
+
+	Differentiating the error with respect to $ y_{j} (n) $, we get
+
+	$$ \dfrac{\partial e_{j} (n)}{\partial y_{j} (n)} = -1 $$
+
+	Differentiating the output signal with respect to $ v_{j} (n) $, we get
+
+	$$ \dfrac{\partial y_{j} (n)}{\partial v_{j} (n)} = \dfrac{d \varphi_{j} (v_{j} (n))}{d v_{j} (n)} $$
+
+	Differentiating the induced local field with respect to $ w_{ji} (n)$ yields
+
+	$$ \dfrac{\partial v_{j} (n)}{\partial w_{ji} (n)} = y_{i} (n) $$
+
+	Using those results,
+
+	$$ \dfrac{\partial \mathcal{E} (n)}{\partial w_{ji} (n)} = -e_{j} (n) \dfrac{d \varphi_{j} (v_{j} (n))}{d v_{j} (n)} y_{i} (n) $$
+
+	\noindent (*) $ y_{i} (n) $ is the output signal coming from the \textit{i}th neuron of the previous layer.
+
+	The correction $ \Delta w_{ji} (n) $ applied to $ w_{ji} (n) $ is defined by the \textit{delta rule},
+
+	$$ \Delta w_{ji} (n) = -\eta \dfrac{\partial \mathcal{E} (n)}{\partial w_{ji} (n)} $$
+
+	\noindent where $ \eta $ is the \textit{learning-rate parameter}. More succintly,
+
+	$$ \Delta w_{ji} (n) = - \eta \delta_{j} (n) y_{i} (n) $$
+
+	\noindent where the \textit{local gradient} $ \delta_{j} (n) $ is defined by
+
+	$$ \begin{aligned}[t]
+			\delta_{j} (n) & = \dfrac{\partial \mathcal{E} (n)}{\partial v_{j} (n)}     \\
+			               & = e_{j} (n) \dfrac{d \varphi_{j} (v_{j} (n))}{d v_{j} (n)} \\
+		\end{aligned} $$
+
+	The problem now lies on specifying a expression to the error $ e_{j} (n) $, and this will depend of the fact the the \textit{j}th neuron is at the output layer or at some hidden layer. The first case is trivial, therefore, we consider the where the neuron is a hidden one.
+
+	We can write the local gradient $ \delta_{j} (n) $ for a hidden neuron \textit{j} as
+
+	$$ \begin{aligned}[t]
+			\delta_{j} (n) & = - \dfrac{\partial \mathcal{E} (n)}{\partial y_{j} (n)} \dfrac{\partial y_{j} (n)}{\partial v_{j} (n)} \\
+			               & = - \dfrac{\partial \mathcal{E} (n)}{\partial y_{j} (n)} \varepsilon^{'}_{j} ( v_{j} (n))
+		\end{aligned} $$
+
+	The observe that
+
+	$$ \mathcal{E} (n) = \dfrac{1}{2} \sum_{k \in C} e_{k}^{2} (n)$$
+
+	\noindent i.e., the cost function is the sum of the quadratic errors of all the outputs of neuron \textit{j}. Differentiating in respect to $ y_{j} (n) $ we obtain
+
+	$$ \dfrac{\partial \mathcal{E} (n)}{\partial y_{j} (n)} = \sum_{k} e_{k} \dfrac{\partial e_{k} (n)}{\partial y_{j} (n)} $$
+
+	Using the chain rule again to compute $\dfrac{\partial e_{k} (n)}{\partial y_{j} (n)} $,
+
+	$$ \dfrac{\partial \mathcal{E} (n)}{\partial y_{j} (n)} = \sum_{k} e_{k} (n) \dfrac{\partial e_{k} (n)}{\partial v_{k} (n)} \dfrac{\partial v_{k} (n)}{\partial y_{j} (n)} $$
+
+	Since  $ e_{k} (n) = d_{k} (n) - \varphi_{k} ( v_{k} (n)) $,
+
+	$$ \dfrac{\partial e_{k} (n)}{\partial v_{k} (n)} = - \varphi^{'}_{k} ( v_{k} (n)) $$
+
+	The induced local field of neuron \textit{k} is given by
+
+	$$ v_{k} (n) = \sum_{j = 0}^{m} w_{kj} (n) y_{j} (n) $$
+
+	\noindent where \textit{m} is the total number of inputs applied to neuron \textit{k}. Differentiating with respect to $ y_{j} (n) $ (output of neuron \textit{j}), we have that
+
+	$$ \dfrac{\partial v_{k} (n)}{\partial y_{j} (n)} = w_{kj} (n) $$
+
+	\noindent which give us
+
+	$$ \begin{aligned}[t]
+			\dfrac{\partial \mathcal{E} (n)}{\partial y_{j} (n)} & = - \sum_{k} e_{k} (n) \varphi^{'}_{k} ( v_{k} (n))w_{kj} (n) \\
+			                                                     & = - \sum_{k} \delta_{k} (n)w_{kj} (n)                         \\
+	\end{aligned} $$
+
+	Finally, we have the \textit{back-propagation formula } for the local gradient $ \delta_{j} (n) $,
+
+	$$ \delta_{j} (n) = \varphi^{'}_{j} ( v_{j} (n)) \sum_{k} \delta_{k} (n) w_{kj} (n) $$
+
+\section{Summary}
+
+In the application of the back-propagation algorithm, two different passes of computation are distinguished: forward and backward pass.
+
+In the \textit{forward pass} the synaptic weights remain unaltered troughout the network, and the function signals of the network are computed on a neuron-by-neuron basis. The function signal apearing at the output of neuron \textit{j} is computed as $ y_{j} (n) = \varphi ( v_{j} (n)) $, where $ v_{j} (n) $ is the induced local field of neuron \textit{j}, the linear combination of the input signals. We can write it as
+
+$$ v_{j} (n) = \sum_{i = 0}^{m} w_{ji} (n) y_{i} = \boldsymbol{w}_{j}^{t} \boldsymbol{y} $$
+
+\noindent where
+
+$$ \boldsymbol{w}_{j} = 
+\begin{bmatrix}
+	w_{j0} \\
+	w_{ji} \\
+	\vdots \\
+	w_{jm} \\
+\end{bmatrix}
+$$
+
+These are the weights related to neuron \textit{j}. We can combine the weights of all the neurons of a layer in matricial notation,
+
+$$ \boldsymbol{W} =
+\begin{bmatrix}
+	\boldsymbol{w}_{1}^{t} \\
+	\vdots \\
+	\boldsymbol{w}_{r}^{t} \\
+\end{bmatrix} =
+\begin{bmatrix}
+	w_{10} & w_{11} & \cdots & w_{1m} \\
+	\vdots & \vdots & \vdots & \vdots \\
+	w_{r0} & w_{r1} & \cdots & w_{rm} \\
+\end{bmatrix}
+$$
+
+\noindent considering that there are \textit{r} neurons in that layer, and \textit{m} neurons at the previous. If the network isn't fully connect, we can define the input as zero (??). So, the local field for the layer is given by
+
+$$ \boldsymbol{v} = \boldsymbol{W}\cdot\boldsymbol{y} $$
+
+\noindent and
+
+$$ \boldsymbol{y}_{j} (n) = \varphi (\boldsymbol{W}\cdot\boldsymbol{y}) $$
+
+To make the recurrence more clear
+
+$$ \boldsymbol{y}_{j} (n) = \varphi (\boldsymbol{W}  \cdot \boldsymbol{y}_{j - 1} (n)) $$
+
+If the input is coming from the input terminal of the network, we write $ y_{i} (n) = x_{i} (n) $, and if neuron \textit{j} is at the output terminal, we write $ y_{j} (n) = o_{j} (n) $. This output is compared with the desired responde $ d_{j} (n) $, obtaining the error signal $ e_{j} (n) $ for the \textit{j}th output neuron. Thus, the forward phase of computation begins at the first hidden layer by presenting it with the input vector and terminates at the output layer by computing the error signal for each neuron of this layer.
+
+The backward pass starts at the output layer by passing the error signals leftward through the network, layer by layer, and recursively computing the $ \delta $ (local gradient) for each neuron. This recursive process permits the synaptic weights of the network to undergo changes proportional to the partial derivate of $ \mathcal{E} (n) $ (cost function) with respecto to the weights. We can write
+
+$$ \dfrac{\partial \mathcal{E} (n)}{\partial \boldsymbol{W}} =
+\begin{bmatrix}
+	\dfrac{\partial \mathcal{E} (n)}{\partial w_{10}} & \cdots & \dfrac{\partial \mathcal{E} (n)}{\partial w_{1m}} \\
+	\vdots & \vdots & \vdots \\
+	\dfrac{\partial \mathcal{E}}{\partial w_{r0}} & \cdots & \dfrac{\partial \mathcal{E}}{\partial w_{rm}} \\
+\end{bmatrix}
+$$
+
+Using the chain rule we can find an expression for the partial derivatives,
+
+$$ \begin{aligned}[t]
+	\dfrac{\partial \mathcal{E} (n)}{\partial \boldsymbol{W}} &= -
+\begin{bmatrix}
+	e_{1} (n) \varphi_{1}' (v_{1} (n))y_{0} (n) & \cdots & e_{1}\varphi_{1}' (v_{1} (n))y_{m} (n) \\
+	\vdots & \vdots & \vdots \\
+	e_{r} (n) \varphi_{r}' (v_{r} (n))y_{0} (n) & \cdots & e_{r}\varphi_{r}' (v_{r} (n))y_{m} (n) \\ 
+\end{bmatrix} \\
+						     &=
+\begin{bmatrix}
+	-\delta_{1} (n) y_{0} (n) & \cdots & -\delta_{1} (n) y_{m} \\
+	\vdots & \vdots & \vdots \\
+	-\delta_{r} (n) y_{0} (n) & \cdots & -\delta_{r} (n) y_{m} \\
+\end{bmatrix} \\
+						     &=
+\begin{bmatrix}
+	-\delta_{1} (n) \\
+	\vdots \\
+	-\delta_{r} (n) \\
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+	y_{0} (n) & \cdots & y_{m} (n) \\
+\end{bmatrix} \\
+						     &= -\boldsymbol{\delta} (n) \cdot \boldsymbol{y}^{t} (n) \\
+\end{aligned} $$
+
+For a neuron located in the output layer, the $ \delta $ is simply equal to the error signal of that neuron multiplied by the first derivative of its nonlinearity. Given the $ \delta $s for the neurons of the output layer, we use $$ \delta_{j} (n) = \varphi_{j}' (v_{j} (n)) \sum_{k} \delta_{k} (n) w_{kj} (n) $$ to compute the $ \delta $s for all the neurons in the penultimate layer and therefore the changes to the weights of all connections feeding into it. The recursive computation is continued, layer by layer, by propagating the changes to all synaptic weights in the network.
+
+There are two usual activation functions
+
+\begin{enumerate}
+	\item \textit{ \textbf{Logistic Function:}} It is defined by
+
+		$$ \varphi_{j} (v_{j} (n)) = \dfrac{1}{1 + \exp (-av_{j} (n))} $$
+
+		\noindent where \textit{a} is an adjustable positive parameter. Differentiating it with respect to $ v_{j} (n) $, we get
+
+		$$ \varphi_{j}' (v_{j} (n)) = \dfrac{a\;\exp (-a v_{j} (n))}{ [1 + \exp (-a v_{j} (n))]^{2}} = a y_{j} (n) [1 - y_{j} (n)]$$
+
+		Hence, the local gradient for neuron \textit{j} can be expressed as
+
+		$$ \begin{aligned}[t]
+			\delta_{j} (n) &= e_{j} (n) \varphi_{j}' (v_{j} (n))\\
+				       &= a [d_{j} (n) - o_{j} (n)]o_{j} (n) [1 - o_{j} (n)] \\
+		\end{aligned} $$
+
+		\noindent where $ o_{j} (n) $ is the function signal at the output of neuron \textit{j}, and $ d_{j} (n) $ is the desired response for it. For an arbitrary hidden neuron \textit{j}, the local gradient is
+
+		$$ \begin{aligned}[t]
+			\delta_{j} (n) &= \varphi_{j}' (v_{j} (n)) \sum_{k} \delta_{k} w_{kj} (n)\\
+				       &= a y_{j} (n) [1 - y_{j} (n)]\sum_{k} \delta_{k} (n)w_{kj} (n)\\
+		\end{aligned} $$
+
+	\item \textit{ \textbf{Hyperbolic Tangent Function:}} It is defined by
+
+		$$ \varphi _{j} (v_{j} (n)) = a \tanh (b v_{j} (n)) $$
+
+		\noindent where \textit{a} and \textit{b} are positive constants. Differentiating with respect to $ v_{j} (n) $,
+
+		$$ \begin{aligned}[t]
+			\varphi_{j}' (v_{j} (n)) &= ab \sech^{2} (bv_{j} (n)) \\
+						 &= ab (1 - \tanh^{2} (bv_{j} (n)))\\
+						 &= \dfrac{b}{a} [a - y_{j} (n)] [a + y_{j} (n)]\\
+		\end{aligned} $$
+
+		For a neuron located in the output layer, the local gradient is
+
+		$$ \delta_{j} (n) = \dfrac{a}{b} [d_{j} (n) - o_{j} (n)] [a - o_{j} (n)] [a + o_{j} (n)] $$
+
+		For a neuron \textit{j} in a hidden layer, we have
+
+		$$ \delta_{j} (n) = \dfrac{b}{a} [a - y_{j} (n)] [a + y_{j} (n)]\sum_{k} \delta_{k} w_{kj} (n)  $$
+\end{enumerate}
+
+\noindent (?) What are the properties of each activation function?
+\end{document}
+

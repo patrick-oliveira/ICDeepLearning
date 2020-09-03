@@ -1,0 +1,315 @@
+\documentclass[twocolumn]{article}
+\usepackage[portuguese]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage[colorlinks,citecolor=red,urlcolor=blue,bookmarks=false,hypertexnames=true]{hyperref}
+\usepackage{geometry}
+\usepackage{float}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=20mm,
+	top=20mm,
+}
+
+\newcommand{\limite}{\displaystyle\lim}
+\newcommand{\integral}{\displaystyle\int}
+\newcommand{\somatorio}{\displaystyle\sum}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{definicao}{Definição}[section]
+\newtheorem{proposicao}{Proposição}[section]
+\newtheorem{corolario}[teorema]{Corolário}
+\newtheorem{lema}{Lema}[section]
+\newtheorem{exemplo}{Exemplo}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{collorary}[theorem]{Collorary}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Propositon}[section]
+\newtheorem{example}{Example}[section]
+
+% Dados de identificação
+\title{Least-Mean-Square Algorithm - Notes}
+\author{Patrick Oliveira}
+\affil{}
+
+\begin{document}
+\maketitle
+
+\section{Introdução}
+Notes taken from the 3rd chapter of Haykin's book, Neural Networks and Learning Machines.
+
+The \textit{least-mean-square (LMS) algorithm} was the first linear adaptive-filtering algorithm for solving problems such as prediction and communication-channel equalization. 
+
+\begin{itemize}
+	\item What is an adaptive-filtering algorithm?
+	\item What is communication-channel equalization?
+\end{itemize}
+
+What is the big picture?
+
+\begin{itemize}
+	\item The LMS algorithm is an on-line learning algorithm, therefore its correction process happens input by input (or indexed in time).
+	\item It is inspired by the perceptron, in the sense that it uses the model of the neuron as a structure that process signals using a linear combiner (it is linear in respect to adjustable parameters).
+	\item What makes an algorithm robust?
+	
+\end{itemize}
+
+\section{Filtering Structure of the LMS Algorithm}
+
+Here it is explained what model is used to define the LMS algorithm.
+
+
+The structure is a filter in the sense that it receives a signal as input, $x_{1} (i), \ldots, x_{M} (i)$, indexed by time $ i = 1, 2, \ldots, M $, which is linearly converted to an output signal $ y (i) = v (i) = \vec{x}^{T} (i) \vec{w} (i) $, where $ w (i) $ is a vector of weights that will be continuously corrected in a feedback loop.
+
+More formally, the external behavior of the system is described by the data set
+
+$$ \mathcal{F} = { \vec{x} (i), d (i); i = 1, 2, \ldots, n, \ldots} $$
+
+\noindent where
+
+$$ \vec{x} (i) = \left[ x_{1} (i), x_{2} (i), \ldots, x_{M} (i) \right]^{T} $$
+
+It can be understood as a pair $( \vec{x} (i), d (i))$ of an input signal and its corresponding output. The sample pairs composing \( \mathcal{F} \) are identically distributed according to an unknown probability law. The dimension M pertaining to the input vector $ \vec{x} (i) $ is referred to as the dimensionality of the input space, or simply as the input dimensionality.
+
+The stimulus vector $ \vec{x} (i) $ can arise in one of two fundamentally different ways, one spatial and the other temporal:
+
+\begin{itemize}
+	\item The M elements of $ \vec{x} (i) $ originate at different points in space; in this case we speak of $ \vec{x} (i) $ as a \textit{snapshot} of data. It could be different sensors directing its signals to one single filter.
+	\item The M elements of $ x (i) $ represent the set of present and (M - 1) past values of some excitation that are \textit{uniformly spaced in time}. It could be one single sensor that saves its previous values until a certain point.
+\end{itemize}
+
+What we want is an algorithm (filter) that corrects itself (weights) automatically (this is the meaning of \textit{adaptive filter}).
+
+\begin{itemize}
+	\item The algorithm starts from an \textit{arbitrary setting} of the neuron's synaptic weights.
+	\item Adjustments to the synaptic weights in response to statistical variations in the system's behavior are made on a \textit{continuous basis} (i.e. time is incorporated into the constitution of the algorithm).
+	\item Computations of adjustments to the synaptic weights are completed inside an interval that is one sampling period long.
+\end{itemize}
+
+\begin{figure}
+	\center
+	\includegraphics[scale = 0.5]{\Figures\adaptiveFilter.png}
+	\caption{Adaptive filter.}
+	\label{fig:adaptiveFilter}
+\end{figure}
+
+The operation of a adaptive filter consists of two continuous process
+
+\begin{enumerate}
+	\item \textit{Filtering process}, which involves the continuous computation of two signals:
+		\begin{itemize}
+			\item an output, denoted by $ y (i) $, that is produced in response to the M elements of the stimulus vector $ \vec{x} (i) $.
+			\item an error signal, denoted by $ e (i) = y (i) - d (i)$, where $ d (i) $ is the \textit{desired response}.
+		\end{itemize}
+	\item \textit{Adaptive process}, which involves the automatic adjustment of the synaptic weights of the neuron in accordance with the error signal $ e (i) $.
+\end{enumerate}
+
+\section{Unconstrained Optimization}
+
+Here we define what problem we intend to solve. It a unconstrained-optmization problem, given that we pretend to minimize a cost fuction without any constraints. The only requirement is that the cost function is strictly decrescent when evaluated at the time-steps.
+
+Later we define different methods that solves this problem.
+
+Consider a cost function $ \mathcal{E} ( \vec{w}) $ that is \textit{continuously differentiable} function of some unknown weight vector $ \vec{w} $. We want to find an optimal solution $ \vec{w}* $ that satisfies the condition
+
+$$ \mathcal{E} ( \vec{w}*) \leq \mathcal{E} ( \vec{w}) $$
+
+That is, we need to solve a \textit{unconstrained-optimzation problem}, stated as: \textit{Minimize the cost function $ \mathcal{E} ( \vec{w}) $ with respect to the weight vector $ \vec{w} $}. The necessary condition for optimality is
+
+$$ \nabla \mathcal{E} ( \vec{w}*) = \vec{0}$$
+
+\noindent where 
+
+$$ \nabla \mathcal{E} ( \vec{w}) = \left[ \dfrac{\partial \mathcal{E}}{\partial w_{1}}, \dfrac{\partial \mathcal{E}}{\partial w_{2}},\ldots, \dfrac{\partial \mathcal{E}}{\partial w_{M}} \right]^{T} $$
+
+A class of unconstrained-optimization algorithms that is particularly well suited for the design of adaptive filters is based on the idea of local \textit{iterative descent}:
+
+\textit{Starting with an initial guess denoted by $ \vec{w} (0) $, generate a sequence of weight vectors $ \vec{w} (1) $, $ \vec{w} (2), \ldots $, such that the cost function $ \mathcal{E} ( \vec{w}) $ is reduced at each operation of the algorithm as shown by}
+
+$$ \mathcal{E} ( \vec{w} (n + 1)) < \mathcal{E} ( \vec{w} (n)) $$
+
+\noindent \textit{where $ \vec{w} (n) $ is the old value of the weight vector and $ \vec{w} (n + 1) is its updated value.$}
+
+
+
+\subsection{Newton's Method}
+
+The idea here is to, first, make a second order approximation of the error function and then minimize it, repeating the process at each time step. We use local approximations since we do not have a global minimum (the function changes as n increases), therefore we cannot solve analytically.
+
+The Hessian Matrix countains the information of the curvature of the local surface, and the gradient matrix countains information about the inclination or direction of the surface. The differences of the weight vectors determines the extension of the local surface. 
+
+The basic idea is to minimize the quadratic approximation of the cost function $ \mathcal{E} ( \vec{w}) $ around the current point $ \vec{w} (n) $; this minimization is performed at each iteration of the algorithm. Using a second-order Taylor series, we may write
+
+$$ \begin{aligned}[t]
+	\Delta \mathcal{E} ( \vec{w} (n)) &= \mathcal{E} ( \vec{w} (n + 1)) - \mathcal{E} ( \vec{w} (n)) \\
+					  &\approx \vec{g}^{T} (n) \Delta \vec{w} (n) + \dfrac{1}{2} \Delta \vec{w}^{T} (n) H (n) \Delta \vec{w} (n)\\
+\end{aligned} $$
+
+\noindent where $ H (n)$ is a $ m \times m $ matrix called the \textit{Hessian matrix} of $ \mathcal{E} (n) $, defined by
+
+
+$$\begin{bmatrix}
+	\dfrac{\partial^{2} \mathcal{E}}{\partial w_{1}^{2}} & \dfrac{\partial^{2} \mathcal{E}}{\partial w_{1}\partial w_{2}} & \cdots & \dfrac{\partial^{2} \mathcal{E}}{\partial w_{1}\partial w_{M}} \\
+	\dfrac{\partial^{2} \mathcal{E}}{\partial w_{2} \partial w_{1}} & \dfrac{\partial^{2} \mathcal{E}}{\partial w_{2}^{2}} & \cdots & \dfrac{\partial^{2} \mathcal{E}}{\partial w_{2} \partial w_{M}} \\
+	\vdots & \vdots & \vdots & \vdots \\
+	\dfrac{\partial^{2} \mathcal{E}}{\partial w_{M} \partial w_{1}} & \dfrac{\partial^{2} \mathcal{E}}{\partial w_{M} \partial w_{2}} & \cdots & \dfrac{\partial^{2} \mathcal{E}}{\partial w\_{M}^{2}} \\
+\end{bmatrix}$$
+
+The method requires $ \mathcal{E} ( \vec{w}) $ to be twice continuously differentiable with respect to the elements of $ \vec{w} $. We minimize $ \Delta \mathcal{E} ( \vec{w}) $ when
+
+$$ \vec{g} (n) + H (n) \Delta \vec{w} (n) = \vec{0} $$
+
+\noindent which yields
+
+$$ \Delta \vec{w} (n) = - H^{-1} (n) \vec{g} (n) $$
+
+\noindent that is,
+
+$$ \begin{aligned}[t]
+	\vec{w} (n + 1) &= \vec{w} (n) + \Delta \vec{w} (n)\\
+			&= \vec{w} (n) - H^{-1} (n) \vec{g} (n) \\
+\end{aligned} $$
+
+\subsection{The Gauss-Newton Method}
+Previously, the cost function was not defined. Here, it is precisely defined. Probably we could use the same function before (that would change anything, when comparing the methods?). We will minimize the norm of a error vector, and in this way we minimize the cost function. The computational cost may be more efficient because we do not need to compute second order derivatives.
+
+The Jacobian matrix (and not a simple gradient vector) appears because we have a collection of n error vectors, each of which depends on the weight vector $ w $, therefore, the Jacobian countains the information of all the derivatives of the error vector. 
+
+\begin{itemize}
+	\item I did not understood the definition of the update weight vector.
+	\item The calculation of the error vector's norm confused me a little.
+	\item What is the difference between $ \vec{w} $ and $ \vec{w} (n) $?
+	\item Research about matrix calculus.
+\end{itemize}
+
+Let
+
+$$ \mathcal{E} ( \vec{w}) = \dfrac{1}{2} \sum_{i = 1}^{n} e^{2} (i) $$
+
+All the error terms in this formula are calculated on the basis of a weight vector $ \vec{w} $ that is fixed over the entire observation interval $$ 1 \leq i \leq n $$ (similar to the batch learning process).
+
+The error signal $ e (i) $ is a function of the adjustable weight vector $ \vec{w} $. Given an operating point $ \vec{w} (n) $, we linearize the dependence of $ e (i) $ on $ \vec{w} $ by introducing the new term
+
+$$ e' (i, \vec{w}) = e (i) + \left[ \dfrac{\partial e (i)}{\partial \vec{w}} \right]_{ \vec{w} = \vec{w} (n)}^{T} \times ( \vec{w} - \vec{w} (n)), \;\;\; i = 1,\ldots, n $$
+
+Using matrix notation
+
+$$ \vec{e}i (n, \vec{w}) = \vec{e} (n) + J (n) ( \vec{w} - \vec{w} (n)) $$
+
+\noindent where $ \vec{e} (n) $ is the error vector
+
+$$ \vec{e} (n) = \left[ e (1), e (2), \ldots, e (n) \right]^{T} $$
+
+and $ J (n) $ is the $ n \times m $ \textit{Jacobian} of $ \vec{e} (n) $:
+
+$$ J (n) = 
+\begin{bmatrix}
+	\dfrac{\partial e (1)}{\partial w_{1}} & \dfrac{\partial e (1)}{\partial w_{2}} & \cdots & \dfrac{\partial e (1)}{\partial w_{M}} \\
+	\dfrac{\partial e (2)}{\partial w_{1}} & \dfrac{\partial e (2)}{\partial w_{2}} & \cdots & \dfrac{\partial e (2)}{\partial w_{M}} \\
+	\vdots & \vdots & \vdots & \vdots \\
+	\dfrac{\partial e (n)}{\partial w_{1}} & \dfrac{\partial e (n)}{\partial w_{2}} & \cdots & \dfrac{\partial e_{n}}{\partial w_{M}} \\
+\end{bmatrix}
+$$
+
+The Jacobian $ J (n) $ is the transpose of the gradient matrix $ \nabla \vec{e} (n) $.
+
+The update weight vector $ \vec{w} (n + 1) $ is now defined by
+
+$$ \vec{w} (n + 1) = arg\; min_{ \vec{w}} { \dfrac{1}{2} || \vec{e}' (n, \vec{w}) ||^{2}} $$
+
+The Euclidean norm of $ \vec{e}' (n, \vec{w}) $ can be evaluated by
+
+$$ \begin{aligned}[t]
+	\dfrac{1}{2}|| \vec{e}' (n, \vec{w}) ||^{2} &= \dfrac{1}{2}|| \vec{e} (n)||^{2} + \vec{e}^{T} (n) J (n) ( \vec{w} - \vec{w} (n))\\
+						    &= + \dfrac{1}{2} ( \vec{w} - \vec{w} (n))^{T} J^{T} (n) J (n) ( \vec{w} - \vec{w} (n))\\
+\end{aligned} $$
+
+Hence, differentiating this expression with respect to $ \vec{w} $ and setting the result equal to zero, we obtain
+
+$$ J^{T} (n) \vec{e} (n) + J^{T} (n) J (n) ( \vec{w} - \vec{w} (n)) = \vec{0} $$
+
+Solving this equation for $ \vec{w} $ we may thus write
+
+$$ \vec{w} (n + 1) = \vec{w} (n) - ( J^{T} (n) J (n))^{-1} J^{T} (n) \vec{e} (n) $$
+
+Its necessary that $ J^{T} (n) J (n) $ is nonsingular. Given that it is always nonnegative definite, it is therefore necessary that $ J (n) $ have row rank \textit{n}. Given that there is no guarantee that this condition will alaways hold, the customary practice is to add the diagonal matrix $ \delta I $ to the matrix $ J^{T} (n) J (n) $, where $ I $ is the identity matrix. The parameter $ \delta $ is a small positive constant chosen to ensure that $ J^{T} (n) J (n) + \delta I $ is positive definite for all $ n $. We obtain the slightly modified form for the update rule:
+
+$$ \vec{w} (n + 1) = \vec{w} (n) - (J^{T} (n) J (n) + \delta I)^{-1} J^{T} (n) \vec{e} (n) $$
+
+Note that the previous recursive equation is the solution of the modified cost function
+
+$$ \mathcal{E} ( \vec{w}) = \dfrac{1}{2} { \sum_{i = 1}^{n} e^{2} (i) + \delta || \vec{w} - \vec{w} (n)||^{2}} $$
+
+\noindent where $ \vec{w} (n) $ is the \textit{current value} of the weight vector $ \vec{w} (i)  $.
+
+\begin{itemize}
+	\item What is the difference of computation cost between the Newton's Method and the Gauss-Newton Method?
+	\item What is the difference between $ \vec{w} $ and $ \vec{w} (n) $?
+	\item \textbf{n} is indexing time? \textbf{It is a observation time interval.}
+	\item The error vector $ \vec{e} (n) $ is a collection of errors indexed by time?
+	\item Why it is necessary to add a linear term depending on $ \vec{w} $ to the error vector?
+	\item What values does $ \vec{w} $ assume?
+	\item The size of the vectors and matrices used grows as n increases?
+\end{itemize}
+
+\subsection{The Wiener Filter}
+
+First, the error vector is defined in such a way that it compares the desired value and what was computed by the machine. The previous value computed the errors by means of derivatives (variation between two time steps). Maybe is that definition that relates the Wiener Filter to the least-squares filter.
+
+The Wiener filter is obtained using the Gauss-Newton update rule, but now we do not need to calculate de Jacobian matrix.
+
+
+We define the error vector as
+
+$$ \begin{aligned}[t]
+	\vec{e} (n) &= \vec{d} (n) - \left[ \vec{x} (1), \vec{x} (2), \ldots, \vec{x} (n) \right]^{T} \vec{w} (n) \\
+		    &= \vec{d} (n) - X (n) \vec{w} (n)\\
+\end{aligned} $$
+
+\noindent where $ \vec{d} (n) $ is the $ n \times 1 $ \textit{desired response vector},
+
+$$ \vec{d} (n) = \left[ d (1), d (2), \ldots, d (n) \right]^{T} $$
+
+and $ X (n) $ is the $ n \times M $ \textit{data matrix},
+
+$$ X (n) = \left[ \vec{x} (1), \vec{x} (2), \ldots, \vec{x} (n) \right]^{T} $$
+
+Differentiating the error vector $ \vec{e} (n) $ with respect to $ \vec{w} (n) $ yields the gradient matrix
+
+$$ \nabla \vec{e} (n) = - X^{T} (n) $$
+
+\noindent and the Jacobian of $ \vec{e} (n) $ is
+
+$$ J (n) = - X (n) $$
+
+Since the equation
+
+$$ \vec{e}' (i, \vec{w}) = \vec{e} (n) + J (n) ( \vec{w} - \vec{w} (n)) $$
+
+\noindent is already linear in the weight vector $ w (n) $ (how is that so?), the Gauss-Newton method converges in a single iteration (how?). 
+
+$$ \begin{aligned}[t]
+	\vec{w} (n + 1) &= \vec{w} (n) - ( J^{T} (n) J (n))^{-1} J^{T} (n) \vec{e} (n)\\
+			&= \vec{w} (n) + (X^{T} (n) X (n))^{-1}X^{T} (n) ( \vec{d} (n) - X (n) \vec{w} (n))\\
+			&= (X^{T} (n) X (n))^{-1} X^{T} (n) \vec{d} (n)\\
+\end{aligned} $$
+
+We define the \textit{pseudoinverse} of the data matrix $ X (n) $ as
+
+$$ X^{+} (n) = (X^{T} (n) X (n))^{-1} X^{T} (n) $$
+
+Therefore,
+
+$$ \vec{w} (n+1) = X^{+} (n) \vec{d} (n) $$
+
+\begin{itemize}
+	\item \textit{It is also noteworthy that the inverse of the learning-rate parameter $\eta$ acts as a measure of the memory of the LMS algorithm: The smaller we make $\eta$, the longer the memory span over which the LMS algorithm remembers past data will be.}
+\end{itemize}
+\end{document}
+
