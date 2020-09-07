@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 # class ConvBlock(nn.Module):
 #     def __init__(self, in_size, out_size, kernel, stride, pad_size = 0):
@@ -100,13 +101,12 @@ def activation(activationFunction):
     ])
     return activations[activationFunction]
 
-# def activation_func(activation):
-#     return nn.ModuleDict([
-#         ['relu', nn.ReLU(inplace = True)],
-#         ['leaky_relu', nn.LeakyReLU(negative_slope = 0.01, inplace = True)],
-#         ['selu', nn.SELU(inplace = True)],
-#         ['none', nn.Identity()]
-#     ])
+
+class Conv2dAuto(nn.Conv2d):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.padding = (self.kernel_size[0] // 2,
+                        self.kernel_size[1] // 2) # dynamic add padding based on the kernel_size
 
 def ConvBlock(in_size, out_size, activFunc = 'relu', *args, **kwargs):
 #     if padding == None: padding = kernel // 2
@@ -168,7 +168,7 @@ class DenseBlock(nn.Module):
         for conv in self.ConvLayers[1:]:
             Y = conv(dense)
             output.append(Y)
-            dense = nn.ReLU(torch.cat(output, 1))
+            dense = F.relu(torch.cat(output, 1))
             
         return dense    
     

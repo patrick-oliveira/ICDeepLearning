@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 # class ConvBlock(nn.Module):
 #     def __init__(self, in_size, out_size, kernel, stride, pad_size = 0):
@@ -167,7 +168,7 @@ class DenseBlock(nn.Module):
         for conv in self.ConvLayers[1:]:
             Y = conv(dense)
             output.append(Y)
-            dense = nn.ReLU(torch.cat(output, 1))
+            dense = F.relu(torch.cat(output, 1))
             
         return dense    
     

@@ -150,7 +150,7 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler = No
             
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
+                best_model_wgts = copy.deepcopy(model.state_dict())
             
     time_elapsed = time.time() - since
     print('Best validation accuracy: {:4f}'.format(best_acc))
