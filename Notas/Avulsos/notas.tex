@@ -67,13 +67,6 @@
 
 \section{Model of a Neuron}
 
- \begin{figure}[H]
-	 \center
-	 \includegraphics[scale = 0.4]{\Figures\modelOfaNeuron.png}
-	 \caption{Mathematical model of a neuron.}
-	 \label{modelofaneuron}
- \end{figure}
-
  A neuron is an information-processing unit fundamental to the operation of a neural network. It is composed by
 
  \begin{enumerate}
@@ -178,13 +171,6 @@
 		 \item The signal at a node is transmitted to each outgoing link originating from that node, with the transmission being entirely independent of the transfer functions of the outgoing links.
 	 \end{enumerate}
 
-	 \begin{figure}
-		 \center
-		 \includegraphics[scale = 0.5]{\Figures\flowgraphrules.png}
-		 \caption{Picture depiction of the three rules for signal-flow graphs.}
-		 \label{flowgraphrules}
-	 \end{figure}
-
 	 Based on those rules, we make the following mathematical definiton of a neural network:
 
 	 A neural network is a directed graph consisting of nodes with interconnecting synaptic and activation links and is characterized by four properties:
@@ -196,13 +182,6 @@
 		 \item The activation link squashes the induced local field of the neuron to produce an output.
 	 \end{enumerate}
 
-	 \begin{figure}[H]
-		 \center
-		 \includegraphics[scale = 0.35]{\Figures\networkNeuronModel.png}
-		 \caption{Signal-flow network model for a neuron.}
-		 \label{networkNeuronModel}
-	 \end{figure}
-
 	 We can also define a simplified network model using a \textit{partially complete graph}, characterized by
 
 	 \begin{enumerate}
@@ -213,25 +192,11 @@
 
 	 A partially complete directed graph defined in this way is referred to as an \textit{architectural graph}, describing the layout of the neural network.
 
-	 \begin{figure}[H]
-		 \center
-		 \includegraphics[scale = 0.4]{\Figures\architecturalgraph.png}
-		 \caption{Archictectural graph of a neuron.}
-		 \label{architecturalgraph}
-	 \end{figure}
-
  \subsection{Network Architectures}
 	 The manner in which the neurons of a neural network are structured is intimately linked with the learning algorithm used to train the network. In general, we may identify three fundamentally different classes of network architectures:
 
 	 \subsubsection{Single-Layer Feedforward Networks}
 		 In a \textit{layered} neural network, the neurons are organized in the form of layers. In the simplest form of a layered network, we have an \textit{input layer} of source nodes that projects directly onto an \textit{output layer} of neurons (computation nodes), but not vice versa. In other words, this network is strictly of a \textit{feedforward type}. Such network is called a \textit{single-layer network}, with the designation "single-layer" referring to the output layer of computation nodes (neurons). We do not count the input layer of source nodes because no computation is performed there
-
-		 \begin{figure}
-			 \center
-			 \includegraphics[scale = 0.7]{\Figures\singleLayerNetwork.png}
-			 \caption{Feedforward network with a single layer of neurons.}
-			 \label{singleLayerNetwork}
-		 \end{figure}
 
 	 \subsubsection{Multilayer Feedforward Networks}
 		 The second class of a feedforward neural network distinguishes itself by the presence of one or more \textit{hidden layers}, whose computation nodes are correspondingly called \textit{hidden neurons} or \textit{hidden units}. The function of hidden neurons is to intervene between the external input and the network output in some useful manner. By adding one or more hidden layers, the network is enabled to extract higher-order statistics from its input. Typically, the neurons in each layer of the network have as their inputs the output signals of the preceding layer only.
@@ -243,13 +208,6 @@
  Rosenblatt's perceptron is built around a nonlinear neuron, namely, the \textit{McCulloch-Pitts model} of a neuron. The goal of the perceptron is to correctly classify the set of externally applied stimuli $ x_1, x_2, \ldots, x_m $ into one of two classes $ \mathcal{C}_{1} $ or $ \mathcal{C}_{2} $, if the perceptron output is, respectively, $ +1 $ or $ -1 $. In the simplesment form of the perceptron, there are two decision regions separated by a \textit{hyperplane}, which is defined by
 
  $$ \somatorio_{i = 1}^{m}w_{i}x_{i} = 0 $$
-
- \begin{figure}[H]
-	 \center
-	 \includegraphics[scale = 0.4]{\Figures\linearDecisionRegion.png}
-	 \caption{Illustration of the hyperplane (in 2 dimensions) as decision boundary.}
-	 \label{linearDecisionRegion}
- \end{figure}
 
  The synaptic weights $ w_1, w_2, \ldots, w_m $ of the perceptron can be adapted on an iteration-by-iteration basis.
 
@@ -437,13 +395,6 @@
 	 \item In the \textit{forward phase}, the synaptic weights of the network are fixed and the input signal is propagated through the network, layer by layer, until it reaches the output. Thus, in this phase, changes are confined to the activation potentials and outputs of the neurons in the network.
 	 \item In the \textit{backward phase}, an error signal is produced by comparing the output of the network with a desired response. The resulting error signal is propagated through the network, agian layer by layer, but this time the propagation is performed in the backward direction. In this second phase, successive adjustments are made to the synaptic weights of the network.
  \end{enumerate}
-
- \begin{figure}[H]
-	 \center
-	 \includegraphics[scale = 0.4]{\Figures\multilayerPerceptron.png}
-	 \caption{Architectural graph of a multilayer perceptron with two hidden layers.}
-	 \label{multilayerPerceptron}
- \end{figure}
 
  The two kinds of signals can be defined as
 

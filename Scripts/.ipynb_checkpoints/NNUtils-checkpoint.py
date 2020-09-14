@@ -95,6 +95,11 @@ def getData(data_type, folder, data_address = 'C:\\Users\\Patrick\\Documents\\Gi
     return dataloader, dataloaders, dataset_sizes, class_names
 
 def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler = None, num_epochs = 10):
+    """
+    Para fazer:
+        - Melhorar o log, mandá-lo para um arquivo txt.
+        - Retornar valor ótimo de validação
+    """
     since = time.time()
     
     best_model_wgts = copy.deepcopy(model.state_dict())
@@ -159,6 +164,11 @@ def train(model, dataloaders, dataset_size, criterion, optimizer, scheduler = No
     return model, best_acc, time_elapsed
                     
 def kfold_train(model, dataset, criterion, optimizer, scheduler = None, num_folds = 5, batch_size = 4, shuffle = True, save_model = False, num_epochs = 10):
+    """
+    Para fazer:
+        - Extrair os valores ótimos de validação de cada fold e a média.
+        - Passar log para um arquivo.
+    """
     kfold = KFold(num_folds, shuffle)
     cumulative_time = 0
     cumulative_best_acc = .0
