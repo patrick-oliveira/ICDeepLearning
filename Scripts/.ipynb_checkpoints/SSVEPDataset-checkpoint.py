@@ -6,14 +6,15 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn import preprocessing
 
 class SSVEPDataset(Dataset):
-    def __init__(self, csvDataFrame, dataType = 512, repeat = False):
+    def __init__(self, csvDataFrame, signal_length = 512, repeat = False):
         """
         csvDataFrame(DataFrame): DataFrame containing the info of the dataset 
         """
         self.csvDataFrame  = csvDataFrame 
         self.samples = []
         self.targets = []
-        self.initDataset(repeat, dataType)
+        self.signal_length = signal_length
+        self.initDataset()
         
         
     def __len__(self):
@@ -31,7 +32,7 @@ class SSVEPDataset(Dataset):
         normalized = (x - mean[:, np.newaxis]) / std[:, np.newaxis]
         return normalized
     
-    def initDataset(self, repeat, dataType):
+    def initDataset(self):
         nRows = len(self.csvDataFrame)
         for dfIndex in range(nRows):
             rowInfo = self.csvDataFrame.loc[dfIndex]
