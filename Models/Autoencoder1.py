@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 class Autoencoder(nn.Module):
@@ -7,11 +8,11 @@ class Autoencoder(nn.Module):
         s = stride
         self.encoder = nn.Sequential(
             nn.Conv2d(1, 3, kernel_size = (1, 2*n1 + 1), padding = (0, n1), stride = (1, s)),
-            nn.BatchNorm2d(3),
-            nn.ReLU(inplace = True)
+            nn.ReLU(inplace = True),
         )
         
         self.pool    = nn.MaxPool2d(kernel_size = (1, 2), stride = (1, 2), return_indices = True)
+        self.batch_norm = nn.BatchNorm2d(3)
         self.unpool  = nn.MaxUnpool2d(kernel_size = (1, 2), stride = (1, 2))
         
         self.decoder = nn.Sequential(
@@ -22,6 +23,7 @@ class Autoencoder(nn.Module):
     def forward(self, x):
         x = self.encoder(x)
         x, _2 = self.pool(x)
+        x = self.batch_norm(x)
         x = self.unpool(x, _2)
         x = self.decoder(x)
         
@@ -31,5 +33,6 @@ class Autoencoder(nn.Module):
         with torch.set_grad_enabled(False):
             x = self.encoder(x)
             x, _ = self.pool(x)
+            x = self.batch_norm(x)
             
         return x
