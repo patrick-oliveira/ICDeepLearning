@@ -107,6 +107,9 @@ def train_autoencoder(project, model, dataloaders, dataset_size, criterion, opti
     
     logger.info('Training complete in {:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60))
     logger.info("Best Validation Loss: {:.2f}\n".format(best_loss))
+    
+    close_log_handlers(logger)
+    
     stats["BestLoss"] = best_loss
     model.load_state_dict(best_model_wgts)
     return model, stats
