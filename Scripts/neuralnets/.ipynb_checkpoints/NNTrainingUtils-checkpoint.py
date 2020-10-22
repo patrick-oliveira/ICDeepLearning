@@ -9,7 +9,7 @@ from torchvision import transforms, utils, datasets, models
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
-from logger import logging
+import logging
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
