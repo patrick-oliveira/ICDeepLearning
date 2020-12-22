@@ -18,7 +18,7 @@ class Project:
     combined_series_dir: Path = data_dir / 'combined'
     images_dir:          Path = data_dir / 'images'
     output_dir:          Path = base_dir / 'Outputs'
-    tsinghua_raw_dir:    Path = data_dir / 'tsinghua' / 'raw' / 'beta'
+    tsinghua_raw_dir:    Path = data_dir / 'tsinghua' / 'raw' 
     tsinghua_cca_dir:     Path = data_dir / 'tsinghua' / 'cca'
     
     # Adaptar para printar todos os diretórios
