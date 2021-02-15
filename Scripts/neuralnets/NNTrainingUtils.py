@@ -46,14 +46,17 @@ def visualize_model(model, num_images=6):
         model.train(mode=was_training)
 
 
-def training_logger(project):
+def training_logger(project, log_name: str = None):
     t = time.localtime()
-    timestamp = time.strftime('%b-%d-%Y - %H_%M', t)
-    file_name = (project.output_dir / ("Training - "+timestamp)).__str__()
+    timestamp = time.strftime('%b-%d-%Y', t)
+    if log_name:
+        file_name = (project.output_dir / ("Training - "+log_name+" - "+timestamp)).__str__()
+    else:
+        file_name = (project.output_dir / ("Training - "+timestamp)).__str__()
     file_mode = 'w'
     logger = logging.getLogger("training_logger")
     logger.setLevel(logging.INFO)
-    f_handler = logging.FileHandler(file_name+'.log')
+    f_handler = logging.FileHandler(file_name+'.log', mode = 'w')
     f_handler.setFormatter(logging.Formatter('%(message)s'))
     logger.addHandler(f_handler)
 
@@ -65,8 +68,8 @@ def close_log_handlers(logger):
         logger.removeHandler(handler)
         
 def train_autoencoder(project, model, dataloaders, dataset_size, criterion, optimizer, scheduler = None, num_epochs = 10,
-                      logger = None, kfold = False):
-    if logger == None: logger = training_logger(project)
+                      logger = None, log_name: str = None, kfold: bool = False):
+    if logger == None: logger = training_logger(project, log_name)
     
     logger.info("{:7}  {:10}  {:6}\n".format("Epoch", "Stage", "Loss"))
     
@@ -91,11 +94,11 @@ def train_autoencoder(project, model, dataloaders, dataset_size, criterion, opti
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                cumulative_loss += loss.item()*inputs.size(0)
+                cumulative_loss += loss*inputs.size(0)
                 del(inputs); del(_)
             if phase == 'train' and scheduler != None:
                 scheduler.step()
-            epoch_loss = cumulative_loss / dataset_size[phase]
+            epoch_loss = (cumulative_loss / dataset_size[phase]).to('cpu').item()
             train_loss.append(epoch_loss) if phase == 'train' else validation_loss.append(epoch_loss)
             logger.info("{:7}  {:10}  {:<6.2f}".format("{}/{}".format(epoch + 1, num_epochs) if phase == "train" else " ",
                                                         "Training" if phase == "train" else "Validation",
@@ -115,8 +118,8 @@ def train_autoencoder(project, model, dataloaders, dataset_size, criterion, opti
     return model, stats
 
 def train(project, model, dataloaders, dataset_size, criterion, optimizer, scheduler=None, num_epochs=10,
-          logger = None, kfold = False):
-    if logger == None: logger = training_logger(project)
+          logger = None, log_name: str = None, kfold = False):
+    if logger == None: logger = training_logger(project, log_name)
     
     logger.info("{:7}  {:10}  {:6}  {:8}\n".format("Epoch", "Stage", "Loss", "Accuracy"))
 
@@ -144,13 +147,13 @@ def train(project, model, dataloaders, dataset_size, criterion, optimizer, sched
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                cumulative_loss += loss.item()*inputs.size(0)
+                cumulative_loss += loss*inputs.size(0)
                 cumulative_hits += torch.sum(preds == labels.data)
                 del(inputs); del(labels)
             if phase == 'train' and scheduler != None:
                 scheduler.step()
-            epoch_loss = cumulative_loss / dataset_size[phase]
-            epoch_acc  = cumulative_hits.double() / dataset_size[phase]
+            epoch_loss = (cumulative_loss / dataset_size[phase]).to('cpu').item()
+            epoch_acc  = (cumulative_hits.double() / dataset_size[phase]).to('cpu').item()
             if phase == 'train':
                 train_stats['Accuracy'].append(epoch_acc)
                 train_stats['Loss'].append(epoch_loss)
@@ -176,19 +179,17 @@ def train(project, model, dataloaders, dataset_size, criterion, optimizer, sched
     return model, stats
 
 
-def kfold_train(project, model, dataset, criterion, optimizer, scheduler=None, num_folds=5, batch_size=4, save_model=False, num_epochs=10):
+def kfold_train(project, model_initializer, dataset, criterion, optimizer_initializer, scheduler_initializer=None, num_folds=5, batch_size=4, save_model=False, num_epochs=10, log_name: str = None):
     """
     Para fazer:
         - Extrair os valores ótimos de validação de cada fold e a média.
         - Passar log para um arquivo.
     """
-    logger = training_logger(project)
+    logger = training_logger(project, log_name)
     kfold_stats = {}
     kfold = KFold(num_folds, shuffle = True)
     cumulative_time = 0
     cumulative_best_acc = .0
-    backup_weights = copy.deepcopy(model.state_dict())
-    init_state_opt = copy.deepcopy(optimizer.state_dict())
 
     for fold, (train_index, test_index) in enumerate(kfold.split(dataset, dataset.targets)):
         logger.info('Fold {}'.format(fold))
@@ -203,19 +204,20 @@ def kfold_train(project, model, dataset, criterion, optimizer, scheduler=None, n
         dataloaders['val'] = torch.utils.data.DataLoader(
             test_subset, batch_size=batch_size, shuffle=True)
 
-        model.load_state_dict(backup_weights)
-        optimizer.load_state_dict(init_state_opt)
-
+        model = model_initializer()
+        optimizer = optimizer_initializer(model)
+        scheduler = scheduler_initializer(optimizer) if scheduler_initializer != None else None
+    
         since = time.time()
         model, stats = train(project, model, dataloaders, dataset_size, criterion, optimizer, scheduler, num_epochs, logger = logger, kfold = True)
         time_elapsed = time.time() - since
 
-        kfold_stats['Fold{fold}'] = stats
+        kfold_stats['Fold {}'.format(fold)] = stats
         
         cumulative_time += time_elapsed
         cumulative_best_acc += stats["BestAccuracy"]
 
-    mean_acc = cumulative_best_acc / num_folds
+    mean_acc = (cumulative_best_acc / num_folds)
     kfold_stats['MeanAccuracy'] = mean_acc
 
     logger.info('Training complete in {:.0f}m {:.0f}s'.format(cumulative_time // 60, cumulative_time % 60))

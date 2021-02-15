@@ -6,8 +6,8 @@ import os
 from itertools import product
 
 class BenchmarkDataset(Dataset):
-    def __init__(self, Project, classes = list(range(1, 40 + 1)), individuals = list(range(1, 34 + 1))):
-        self.data_path = Project.tsinghua_raw_dir / 'benchmark' / 'separated'
+    def __init__(self, Project, sequence_length, classes = list(range(1, 40 + 1)), individuals = list(range(1, 34 + 1))):
+        self.data_path = Project.tsinghua_raw_dir / 'benchmark' / 'separated_{}'.format(sequence_length)
         self.samples = []
         self.targets = []
         self.classes = (lambda L: [str(c) for c in L])(classes)

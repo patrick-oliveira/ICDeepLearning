@@ -6,8 +6,10 @@ class Autoencoder(nn.Module):
         super(Autoencoder, self).__init__()
         n1 = kernel_n
         s = stride
+        ifm = 3
         self.encoder = nn.Sequential(
-            nn.Conv2d(1, n_feature_maps, kernel_size = (1, 2*n1 + 1), padding = (0, n1), stride = (1, s)),
+            nn.Conv2d(1, ifm, kernel_size = (1, 2*n1 + 1), padding = (0, n1), stride = (1, 1)),
+            nn.Conv2d(ifm, n_feature_maps, kernel_size = (1, 2*n1 + 1), padding = (0, n1), stride = (1, s)),
             nn.ReLU(inplace = True),
         )
         

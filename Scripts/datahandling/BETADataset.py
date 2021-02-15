@@ -33,7 +33,7 @@ class BETADataset(Dataset):
         
         
     def init_dataset(self):
-        file_names = ["S{}_{}.csv".format(i, b) for (i, b) in product(self.individuals, range(1, 4 + 1))]
+        file_names = ["S{}_{}_{}.csv".format(i, b, p) for (i, b, p) in product(self.individuals, range(1, 4 + 1), range(1, 2 + 1))] # Define this correctly later
         for c in self.classes:
             for file in file_names:
                 file_path = self.data_path / c / file
