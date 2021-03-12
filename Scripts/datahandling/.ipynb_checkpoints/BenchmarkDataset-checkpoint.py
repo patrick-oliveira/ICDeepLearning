@@ -33,7 +33,7 @@ class BenchmarkDataset(Dataset):
         
         
     def init_dataset(self):
-        file_names = ["S{}_{}_{}.csv".format(i, b, c) for (i, b, c) in product(self.individuals, range(1, 6 + 1), [1, 2, 3])]
+        file_names = ["S{}_{}_{}.csv".format(i, b, c) for (i, b, c) in product(self.individuals, range(1, 6 + 1), [1, 2])]
         for c in self.classes:
             for file in file_names:
                 file_path = self.data_path / c / file
