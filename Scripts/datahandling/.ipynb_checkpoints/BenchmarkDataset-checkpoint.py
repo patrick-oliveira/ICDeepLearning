@@ -6,8 +6,9 @@ import os
 from itertools import product
 
 class BenchmarkDataset(Dataset):
-    def __init__(self, Project, sequence_length, classes = list(range(1, 40 + 1)), individuals = list(range(1, 34 + 1))):
-        self.data_path = Project.tsinghua_raw_dir / 'benchmark' / 'separated_{}'.format(sequence_length)
+    def __init__(self, Project, sequence_length, classes = list(range(1, 40 + 1)), individuals = list(range(1, 34 + 1)), cca = False):
+        base_path = Project.tsinghua_cca_dir if cca else Project.tsinghua_raw_dir
+        self.data_path = base_path / 'benchmark' / 'separated_{}'.format(sequence_length)
         self.samples = []
         self.targets = []
         self.classes = (lambda L: [str(c) for c in L])(classes)
