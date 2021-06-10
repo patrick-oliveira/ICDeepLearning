@@ -11,9 +11,9 @@ class Autoencoder(nn.Module):
             nn.ReLU(inplace = True),
         )
         
-        self.pool    = nn.MaxPool2d(kernel_size = (1, 2), stride = (1, 2), return_indices = True)
+#         self.pool    = nn.MaxPool2d(kernel_size = (1, 2), stride = (1, 2), return_indices = True)
         self.batch_norm = nn.BatchNorm2d(n_feature_maps)
-        self.unpool  = nn.MaxUnpool2d(kernel_size = (1, 2), stride = (1, 2))
+#         self.unpool  = nn.MaxUnpool2d(kernel_size = (1, 2), stride = (1, 2))
         
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(n_feature_maps, 1, kernel_size = (1, 2*n1 + 1), padding = (0, n1), stride = (1, s), output_padding = (0, s - 1))
@@ -22,9 +22,9 @@ class Autoencoder(nn.Module):
     
     def forward(self, x):
         x = self.encoder(x)
-        x, _2 = self.pool(x)
+#         x, _2 = self.pool(x)
         x = self.batch_norm(x)
-        x = self.unpool(x, _2)
+#         x = self.unpool(x, _2)
         x = self.decoder(x)
         
         return x

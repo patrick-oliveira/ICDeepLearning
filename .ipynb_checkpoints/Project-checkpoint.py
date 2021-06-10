@@ -12,9 +12,9 @@ class Project:
         Basic information about the project.
     """
     base:            Path = Path(__file__).parents[0]
-    data:            Path = base / 'Data'
+    data:            Path = base / 'Datasets'
     output:          Path = base / 'Outputs'
-    tsinghua:        Path = base / 'Tsinghua'
+    tsinghua:        Path = data / 'Tsinghua'
     
     # Adaptar para printar todos os diretórios
     
