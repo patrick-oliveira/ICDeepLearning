@@ -20,6 +20,7 @@ def CreateDatasetCSVList(signal_length, data_path, output_path):
         for state in range(1, 5 + 1):
             files_path = subject_path / str(state)
             files = os.listdir(files_path)
+            # coloque uma função para remover tudo o que não for csv
 
             data = pd.DataFrame(index = range(len(files)), columns = ['subject', 'state', 'file'])
             
@@ -41,7 +42,7 @@ def read_data(path):
 electrodes_dict = {'O1':1, 'O2':2, 'Oz':3, 'POz':4, 'Pz':5, 'PO3':6, 'PO4':7, 'PO7':8, 
                    'PO8':9, 'P1':10, 'P2':11, 'Cz':12, 'C1':13, 'C2':14, 'CPz':15, 'FCz':16}
 
-def combine(project, signal_length, preprocessing = 'cca', 
+def combine(project, signal_length, preprocessing = 'CCA', 
             electrodes = ['O1', 'O2', 'Oz', 'POz', 'Pz', 'PO3', 'PO4', 'PO7', 'PO8', 'P1', 'P2', 'Cz', 'C1', 'C2', 'CPz', 'FCz'],
             ):
     """
@@ -50,16 +51,16 @@ def combine(project, signal_length, preprocessing = 'cca',
 
     """
     CreateDatasetCSVList(signal_length, 
-                         project.base_series_dir / preprocessing / signal_length,
-                         project.output_dir)
+                         project.unicamp_signals / preprocessing / signal_length,
+                         project.output)
 
-    data = pd.read_csv(project.output_dir / ("SSVEPDataset_"+signal_length+".csv"), dtype = 'str')
+    data = pd.read_csv(project.output / ("SSVEPDataset_"+signal_length+".csv"), dtype = 'str')
 
     for i in range(len(data)):
         subject = data.loc[i]['subject']
         state   = data.loc[i]['state']
         file    = data.loc[i]['file']
-        sample_path = project.base_series_dir / preprocessing / signal_length / subject / state / file
+        sample_path = project.unicamp_signals / preprocessing / signal_length / subject / state / file
         sample = read_data(sample_path).values.T
 
         num_electrodes = len(electrodes)
@@ -68,6 +69,6 @@ def combine(project, signal_length, preprocessing = 'cca',
             combined_series += sample[electrodes_dict[electrode] - 1]
         combined_series /= num_electrodes
 
-        (project.combined_series_dir / preprocessing / signal_length / subject / state).mkdir(parents=True, exist_ok=True)
-        combined_path = project.combined_series_dir / preprocessing / signal_length / subject / state / file
+        (project.unicamp_combined_signals / preprocessing / signal_length / subject / state).mkdir(parents=True, exist_ok=True)
+        combined_path = project.unicamp_combined_signals / preprocessing / signal_length / subject / state / file
         np.savetxt(combined_path.__str__(), combined_series)

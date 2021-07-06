@@ -87,9 +87,10 @@ class Trainer:
         return model, training_info
     
     def kfold_train(self, model_initializer, optimizer_initializer, criterion,
-                    dataset, num_folds: int = 5, batch_size: int = 5, num_epochs:int = 10,
+                    dataset, num_folds: int = 5, batch_size: int = 5, num_epochs:int = 20,
                     scheduler_initializer = None,
-                    save_model = False):
+                    save_model = False,
+                    *args, **kwargs):
         '''
         Este método faz a chamada da função geral de treinamento no contexto do kfold cross-validation.
         
@@ -122,12 +123,14 @@ class Trainer:
                 dataloaders['train'] = torch.utils.data.DataLoader(train_subset, batch_size=batch_size, shuffle=True)
                 dataloaders['val'] = torch.utils.data.DataLoader(test_subset, batch_size=batch_size, shuffle=True)
                 
-                model = model_initializer()
-                optimizer = optimizer_initializer(model)
+                model = model_initializer(kwargs['classifier'](), kwargs['autoencoder'](), device = device)
+                optimizer = optimizer_initializer(model, lr = 1e-3, momentum = 0.9)
                 scheduler = scheduler_initializer(optimizer) if scheduler_initializer != None else None
                 
                 since = time.time()
-                model, training_info = self.training_function(model, dataloaders, criterion, optimizer, scheduler, num_epochs, logger, self.training_routine, self.validation_routine)
+                model, training_info = self.training_function(model, dataloaders, criterion, optimizer, scheduler,
+                                                              num_epochs, logger, self.training_routine, 
+                                                              self.validation_routine)
                 time_elapsed = time.time() - since
                 
                 kfold_stats[f'Fold {fold}'] = training_info
@@ -135,7 +138,7 @@ class Trainer:
                 cumulative_time += time_elapsed
                 if self.problem_type == 'regression':
                     cumulative_best += training_info['Best Loss']
-                elif self.problem_Type == 'classification':
+                elif self.problem_type == 'classification':
                     cumulative_best += training_info['Best Accuracy']
                 
             kfold_stats['Mean Best'] = (cumulative_best / num_folds)
@@ -221,9 +224,7 @@ def train_classification(model, dataloaders, criterion, optimizer, scheduler = N
         logger.info(training_log); logger.info(validation_log)
 
     time_elapsed = time.time() - since
-    conclusion_log = 'Training complete in {:.0f}m {:.0f}s \n \
-                      Best Validation Accuracy: {:.2f} \n \
-                      Best Validation Loss: {:.2f}'.format(time_elapsed // 60, time_elapsed % 60, training_info['Best Accuracy'], training_info['Best Loss'])
+    conclusion_log = 'Training complete in {:.0f}m {:.0f}s \nBest Validation Accuracy: {:.2f} \nBest Validation Loss: {:.2f}'.format(time_elapsed // 60, time_elapsed % 60, training_info['Best Accuracy'], training_info['Best Loss'])
     logger.info(conclusion_log)
     model.load_state_dict(best_model)
     return model, training_info
@@ -296,6 +297,49 @@ def train_regression(model, dataloaders, criterion, optimizer, scheduler = None,
     logger.info(conclusion_log)
     model.load_state_dict(best_model)
     return model, training_info
+
+
+def basic_training_routine(model, inputs, labels, criterion, optimizer, scheduler = None):
+    inputs = inputs.to(device)
+    labels = labels.to(device)
+    
+    # Zero the parameter gradients
+    optimizer.zero_grad()
+    
+    # Forward pass
+    outputs = model(inputs)
+    _, preds = torch.max(outputs, 1)
+    
+    # Compute the loss
+    loss = criterion(outputs, labels)
+    
+    # backward pass
+    loss.backward()
+    
+    # Optimize
+    optimizer.step()
+    
+    # Decrease learning rate
+    if scheduler != None:
+        scheduler.step()
+        
+    # Compute cumulative loss (to return)
+    cumulative_loss = loss.data.item() * inputs.size(0)
+    cumulative_hits = torch.sum(preds == labels.data)
+    
+    del(inputs); del(labels)
+    return cumulative_loss, cumulative_hits
+
+def basic_validation_routine(model, inputs, labels, criterion):
+    inputs = inputs.to(device)
+    labels = labels.to(device)
+    outputs = model(inputs)
+    _, preds = torch.max(outputs, 1)
+    loss = criterion(outputs, labels)
+    cumulative_loss = loss.data.item() * inputs.size(0)
+    cumulative_hits = torch.sum(preds == labels.data)
+    del(inputs); del(labels)
+    return cumulative_loss, cumulative_hits
 
 
 def autoencoder_basic_training_routine(model, inputs, labels, criterion, optimizer, scheduler = None):

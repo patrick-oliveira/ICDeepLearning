@@ -27,7 +27,7 @@ class SSVEPDataset(Dataset):
         subject = str(dataframe['subject'])
         state = str(dataframe['state'])
         file = dataframe['file']
-        path = (self.project_info.base_series_dir / self.preprocessing / self.signal_length / subject / state / file).__str__()
+        path = (self.project_info.unicamp_signals / self.preprocessing / self.signal_length / subject / state / file).__str__()
         return torch.tensor(self.normalize(pd.read_csv(path, names = range(1, 16+1), dtype = float).values.T), dtype = torch.float)
 
     def normalize(self, x):
